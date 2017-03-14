@@ -1,0 +1,16 @@
+## Interface: 11200
+## Title: LazyScript - |cffff770CLazy|r|cffffffffWarrior|r
+## Version: 1.0.2
+## X-Revision: $Revision: 747 $
+## X-LazyScriptCompatibility: 3
+## Notes: Programmable Warrior Attacks.
+## Notes-ruRU: Программируемые атаки воина.
+## RequiredDeps: LazyScript
+## OptionalDeps: MobInfo-2, Tracer
+## LoadOnDemand: 1
+## X-LazyScriptVersion: 1.0
+
+LazyWarrior.lua
+ParseWarrior.lua
+Localization.lua
+LazyWarrior.xml

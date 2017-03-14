@@ -1,0 +1,16 @@
+## Interface: 11200
+## Title: LazyScript - |cffff770CLazy|r|cffffffffHunter|r
+## Version: 1.0.2
+## X-Revision: $Revision: 747 $
+## X-LazyScriptCompatibility: 3
+## Notes: Programmable Hunter Attacks.
+## Notes-ruRU: Программируемые атаки охотника.
+## RequiredDeps: LazyScript
+## OptionalDeps: MobInfo-2, Tracer
+## LoadOnDemand: 1
+## X-LazyScriptVersion: 1.0
+
+LazyHunter.lua
+ParseHunter.lua
+Localization.lua
+LazyHunter.xml

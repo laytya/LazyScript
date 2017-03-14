@@ -1,0 +1,35 @@
+<Bindings>
+	<Binding name="LAZYSCRIPT_EXECUTE" header="LAZYSCRIPT">
+		lazyScript.SlashCommand()
+	</Binding>
+	<Binding name="LAZYSCRIPT_KEYBIND1">
+		lazyScript.UseBoundForm(1);
+	</Binding>
+	<Binding name="LAZYSCRIPT_KEYBIND2">
+		lazyScript.UseBoundForm(2);
+	</Binding>
+	<Binding name="LAZYSCRIPT_KEYBIND3">
+		lazyScript.UseBoundForm(3);
+	</Binding>
+	<Binding name="LAZYSCRIPT_KEYBIND4">
+		lazyScript.UseBoundForm(4);
+	</Binding>
+	<Binding name="LAZYSCRIPT_KEYBIND5">
+		lazyScript.UseBoundForm(5);
+	</Binding>
+	<Binding name="LAZYSCRIPT_KEYBIND6">
+		lazyScript.UseBoundForm(6);
+	</Binding>
+	<Binding name="LAZYSCRIPT_KEYBIND7">
+		lazyScript.UseBoundForm(7);
+	</Binding>
+	<Binding name="LAZYSCRIPT_KEYBIND8">
+		lazyScript.UseBoundForm(8);
+	</Binding>
+	<Binding name="LAZYSCRIPT_KEYBIND9">
+		lazyScript.UseBoundForm(9);
+	</Binding>
+	<Binding name="LAZYSCRIPT_KEYBIND10">
+		lazyScript.UseBoundForm(10);
+	</Binding>
+</Bindings>

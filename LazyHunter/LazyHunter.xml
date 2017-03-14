@@ -1,0 +1,26 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	
+	<Frame name="LazyHunterFrame">
+		<Scripts>
+			<OnLoad>
+				lazyHunterLoad.metadata:updateRevisionFromKeyword("$Revision: 171 $")
+				lazyHunterLoad.OnLoad()
+			</OnLoad>
+			<OnEvent>
+				lazyHunterLoad.OnEvent()
+			</OnEvent>
+		</Scripts>
+	</Frame>
+	
+	<!-- Thanks http://www.wowwiki.com/UIOBJECT_GameTooltip -->
+	<GameTooltip name="LazyHunter_Tooltip" inherits="GameTooltipTemplate">
+		<Scripts>
+			<OnLoad>
+				this:SetOwner(this, "ANCHOR_NONE")
+			</OnLoad>
+		</Scripts>
+	</GameTooltip>
+</Ui>

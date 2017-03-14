@@ -1,0 +1,16 @@
+## Interface: 11200
+## Title: LazyScript - |cffff770CLazy|r|cffffffffWarlock|r
+## Version: 1.0-alpha18
+## X-Revision: $Revision: 747 $
+## X-LazyScriptCompatibility: 3
+## Notes: Programmable Warlock Attacks.
+##Notes-ruRU: Программируемые атаки чернокнижника.
+## RequiredDeps: LazyScript
+## OptionalDeps: MobInfo-2, Tracer, BonusScanner
+## LoadOnDemand: 1
+## X-LazyScriptVersion: 1.0
+
+LazyWarlock.lua
+ParseWarlock.lua
+Localization.lua
+LazyWarlock.xml

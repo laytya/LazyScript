@@ -1,0 +1,18 @@
+## Interface: 11200
+## Title: LazyScript - |cffff770CLazy|r|cffffffffRogue|r
+## Version: 4.0.2
+## X-Revision: $Revision: 747 $
+## X-LazyScriptCompatibility: 3
+## Notes: Programmable Rogue Attacks.
+## Notes-ruRU: Программируемые атаки разбойника.
+## RequiredDeps: LazyScript
+## OptionalDeps: MobInfo-2, Tracer
+## SavedVariables: lrConf
+## LoadOnDemand: 1
+## X-LazyScriptVersion: 1.0
+
+LazyRogue.lua
+EviscerateTracking.lua
+ParseRogue.lua
+Localization.lua
+LazyRogue.xml

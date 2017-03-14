@@ -1,0 +1,605 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	
+	<Button name="LazyScriptFormHelpTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(LazyScriptFormHelp)
+				lazyScript.formHelp.OnTabButtonClick(this:GetName(), this:GetText())
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Frame name="LazyScriptFormEditFrame" toplevel="true" enableMouse="true" resizable="true" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="500" y="430"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		
+		<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground"
+		edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		
+		<Layers>
+			<Layer level="ARTWORK">
+				
+				<FontString name="$parentTitle" inherits="GameFontHighlightLarge" justifyH="CENTER" text="LazyScript_Form_Editor">
+					<Size>
+						<AbsDimension x="200" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="CENTER" relativeTo="$parent" relativePoint="TOP">
+							<Offset>
+								<AbsDimension x="0" y="-20"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				
+				<FontString name="$parentFormNameDescr" inherits="GameFontHighlight" justifyH="LEFT" text="Editing_form">
+					<Size>
+						<AbsDimension x="85" y="18"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="15" y="-41"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			
+			<Frame name="$parentResizeHandle">
+				<Scripts>
+					<OnMouseUp>
+						if ( this:GetParent().isResizing ) then
+						this:GetParent():StopMovingOrSizing();
+						LazyScriptFormScrollFrame:SetWidth(this:GetParent():GetWidth()-50);
+						LazyScriptFormEditFrameForm:SetWidth(LazyScriptFormScrollFrame:GetWidth()-50);
+						LazyScriptFormScrollFrame:SetHeight(this:GetParent():GetHeight()-110);
+						LazyScriptFormEditFrameForm:SetHeight(LazyScriptFormScrollFrame:GetHeight()-110);
+						LazyScriptFormScrollFrame:Show();
+						this:GetParent().isResizing = false;
+						end
+					</OnMouseUp>
+					<OnMouseDown>
+						if arg1 == "LeftButton" then
+						LazyScriptFormScrollFrame:Hide();
+						this:GetParent():SetMinResize(350,150);
+						this:GetParent():StartSizing("BOTTOMRIGHT");
+						this:GetParent().isResizing = true
+						end
+					</OnMouseDown>
+				</Scripts>
+				<Size>
+					<AbsDimension x="16" y="16" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-6" y="6" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\AddOns\LazyScript\img\corner" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			
+			<ScrollFrame name="LazyScriptFormScrollFrame" inherits="UIPanelScrollFrameTemplate" resizable="true" >
+				<Size>
+					<AbsDimension x="450" y="320"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-70"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground"
+				edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true" alpha="1.0">
+					<EdgeSize>
+						<AbsValue val="8"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="8"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="0" bottom="0"/>
+					</BackgroundInsets>
+				</Backdrop>
+				
+				<Scripts>
+					<OnMouseDown>
+						this.mouseDown = true
+					</OnMouseDown>
+					<OnMouseUp>
+						if this.mouseDown then
+						LazyScriptFormEditFrameForm:SetFocus()
+						end
+					</OnMouseUp>
+				</Scripts>
+				
+				
+				<ScrollChild>
+					<Frame name="$parentScrollChild" resizable="true" >
+						<Size>
+							<AbsDimension x="435" y="310"/>
+						</Size>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="5" y="-5"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Frames>
+							
+							
+							<EditBox name="LazyScriptFormEditFrameForm" letters="7000" resizable="true" enableMouse="true" autoFocus="false" multiLine="true">
+								<Size>
+									<AbsDimension x="435" y="310"/>
+								</Size>
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+										<Offset>
+											<AbsDimension x="5" y="-5"/>
+										</Offset>
+									</Anchor>
+								</Anchors>
+								
+								<Scripts>
+									<OnEscapePressed>
+										this:ClearFocus();
+									</OnEscapePressed>
+									<OnTabPressed>
+										LazyScriptFormEditFrameFormName:SetFocus()
+									</OnTabPressed>
+									<OnShow>
+										this:SetMaxLetters(32000)
+										LAZYSCRIPTHELP_SCROLLBAR_HACK2 = false
+									</OnShow>
+									<OnMouseUp>
+										LAZYSCRIPTHELP_SCROLLBAR_HACK2 = true
+									</OnMouseUp>
+									<OnTextChanged>
+										ScrollingEdit_OnTextChanged(LazyScriptFormScrollFrame)
+									</OnTextChanged>
+									<OnCursorChanged>
+										ScrollingEdit_OnCursorChanged(arg1, arg2-10, arg3, arg4)
+									</OnCursorChanged>
+									<OnUpdate>
+										if (LAZYSCRIPTHELP_SCROLLBAR_HACK2) then
+										ScrollingEdit_OnUpdate(LazyScriptFormScrollFrame)
+										end
+									</OnUpdate>
+								</Scripts>
+								
+								<FontString inherits="GameFontHighlight"/>
+								<Color r=".2" g=".2" b=".2" />
+							</EditBox>
+						</Frames>
+					</Frame>
+				</ScrollChild>
+			</ScrollFrame>
+			
+			
+			<EditBox name="$parentFormName" letters="24" resizable="true" enableMouse="true" autoFocus="false">
+				<Size>
+					<AbsDimension x="150" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="110" y="-40"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground"
+				edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true" alpha="1.0">
+					<EdgeSize>
+						<AbsValue val="4"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="4"/>
+					</TileSize>
+					<BackgroundInsets>
+						<AbsInset left="0" right="0" top="0" bottom="0"/>
+					</BackgroundInsets>
+				</Backdrop>
+				
+				<Scripts>
+					<OnEscapePressed>
+						this:ClearFocus();
+					</OnEscapePressed>
+					<OnTabPressed>
+						LazyScriptFormEditFrameForm:SetFocus()
+					</OnTabPressed>
+				</Scripts>
+				<FontString inherits="GameFontHighlight"/>
+				<Color r=".2" g=".2" b=".2" />
+			</EditBox>
+			
+			
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(LazyScriptFormEditFrame)
+						HideUIPanel(LazyScriptFormHelp)
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parentHelpButton" inherits="GameMenuButtonTemplate" text="Help">
+				<Size>
+					<AbsDimension x="100" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="$parent" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="10" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						if (LazyScriptFormHelp:IsVisible()) then
+						LazyScriptFormHelp:Hide()
+						else
+						LazyScriptFormHelp:Show()
+						end
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parentCancelButton" inherits="GameMenuButtonTemplate" text="Cancel">
+				<Size>
+					<AbsDimension x="100" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-10" y="10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						lazyScript.formEditBox.cancelEdit = true
+						HideUIPanel(LazyScriptFormEditFrame)
+						HideUIPanel(LazyScriptFormHelp)
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parentOkayButton" inherits="GameMenuButtonTemplate" text="Okay">
+				<Size>
+					<AbsDimension x="100" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentCancelButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(LazyScriptFormEditFrame)
+						HideUIPanel(LazyScriptFormHelp)
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<Button name="$parentTestButton" inherits="GameMenuButtonTemplate" text="Test">
+				<Size>
+					<AbsDimension x="100" y="25"/>
+				</Size>
+				<Anchors>
+					<Anchor point="RIGHT" relativeTo="$parentOkayButton" relativePoint="LEFT">
+						<Offset>
+							<AbsDimension x="0" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						lazyScript.formEditBox.testForm()
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+		</Frames>
+		
+		<Scripts>
+			<OnShow>
+				lazyScript.formEditBox.OnShow()
+			</OnShow>
+			<OnHide>
+				lazyScript.formEditBox.OnHide()
+			</OnHide>
+			<OnLoad>
+				lazyScript.metadata:updateRevisionFromKeyword("$Revision: 446 $")
+				this:RegisterForDrag("LeftButton")
+				tinsert(UISpecialFrames, this:GetName());
+			</OnLoad>
+			<OnDragStart>
+				this:StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing()
+			</OnDragStop>
+			<OnMouseUp>
+				this:StopMovingOrSizing()
+			</OnMouseUp>
+		</Scripts>
+		
+	</Frame>
+	
+	<Frame name="LazyScriptFormHelp" topLevel="true" enableMouse="true" movable="true" resizable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="500" y="430"/>
+		</Size>
+		<Anchors>
+			<Anchor point="LEFT"/>
+			<Offset>
+				<AbsDimension x="25" y="0"/>
+			</Offset>
+		</Anchors>
+		
+		<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground"
+		edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton")
+				lazyScript.formHelp.OnLoad()
+				tinsert(UISpecialFrames, this:GetName());
+			</OnLoad>
+			<OnShow>
+				PanelTemplates_SetTab(LazyScriptFormHelp, 1)
+				lazyScript.formHelp.OnTabButtonClick("LazyScriptFormHelpTab1", LazyScriptFormHelpTab1:GetText())
+			</OnShow>
+			<OnDragStart>
+				this:StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing()
+			</OnDragStop>
+			<OnMouseUp>
+				this:StopMovingOrSizing()
+			</OnMouseUp>
+		</Scripts>
+		
+		<Layers>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentTitle" inherits="GameFontHighlightLarge" justifyH="CENTER" text="LazyScript_Help">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+							<Offset>
+								<AbsDimension x="0" y="-20"/>
+							</Offset>
+						</Anchor>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="TOPRIGHT">
+							<Offset>
+								<AbsDimension x="0" y="-40"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		
+		<Frames>
+			<Frame name="$parentResizeHandle">
+				<Scripts>
+					<OnMouseUp>
+						if ( this:GetParent().isResizing ) then
+						this:GetParent():StopMovingOrSizing();
+						this:GetParent().isResizing = false;
+						end
+					</OnMouseUp>
+					<OnMouseDown>
+						if arg1 == "LeftButton" then
+						this:GetParent():SetMinResize(350,150);
+						this:GetParent():StartSizing("BOTTOMRIGHT");
+						this:GetParent().isResizing = true
+						end
+					</OnMouseDown>
+				</Scripts>
+				<Size>
+					<AbsDimension x="16" y="16" />
+				</Size>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-6" y="6" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture file="Interface\AddOns\LazyScript\img\corner" alphaMode="ADD">
+							<Anchors>
+								<Anchor point="TOPLEFT">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="0" y="0" />
+									</Offset>
+								</Anchor>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-4" y="-4"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(LazyScriptFormHelp)
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-50"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-35" y="15"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Scripts>
+					<OnSizeChanged>
+						this:GetScrollChild():SetWidth(this:GetWidth()+40)
+						if this:GetScrollChild().currentText then
+						this:GetScrollChild():SetText(this:GetScrollChild().currentText)
+						this:UpdateScrollChildRect()
+						end
+					</OnSizeChanged>
+				</Scripts>
+				
+				<ScrollChild>
+					<SimpleHTML name="$parentScrollChildText">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnShow>
+								this:SetWidth(this:GetParent():GetWidth()+40)
+								this:SetHeight(100)
+							</OnShow>
+						</Scripts>
+						<FontString inherits="GameFontNormal">
+							<Color r="1" g="1" b="0.6"/>
+						</FontString>
+						<FontStringHeader1 inherits="GameFontNormal">
+							<Color r="1" g="1" b="1"/>
+						</FontStringHeader1>
+						<FontStringHeader2 inherits="GameFontNormal">
+							<Color r="1" g="0.5" b="0.25"/>
+						</FontStringHeader2>
+						<FontStringHeader3 inherits="GameFontNormal">
+							<Color r="1" g="0.5" b="0.3"/>
+						</FontStringHeader3>
+					</SimpleHTML>
+				</ScrollChild>
+			</ScrollFrame>
+			
+			<Button name="LazyScriptFormHelpTab1" inherits="LazyScriptFormHelpTabTemplate" id="1" text="Overview">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="60" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<Button name="LazyScriptFormHelpTab2" inherits="LazyScriptFormHelpTabTemplate" id="2" text="Actions">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LazyScriptFormHelpTab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<Button name="LazyScriptFormHelpTab3" inherits="LazyScriptFormHelpTabTemplate" id="3" text="Criteria">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LazyScriptFormHelpTab2" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<Button name="LazyScriptFormHelpTab4" inherits="LazyScriptFormHelpTabTemplate" id="4" text="Buffs_Debuffs">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LazyScriptFormHelpTab3" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+</Ui>

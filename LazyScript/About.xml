@@ -1,0 +1,150 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
+	
+	<Button name="LazyScriptAboutFrameTabTemplate" inherits="CharacterFrameTabButtonTemplate" virtual="true">
+		<Scripts>
+			<OnClick>
+				PanelTemplates_Tab_OnClick(LazyScriptAboutFrame)
+				lazyScript.about.OnTabButtonClick(this:GetName(), this:GetText())
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<Frame name="LazyScriptAboutFrame" toplevel="true" enableMouse="true" movable="true" parent="UIParent" hidden="true">
+		<Size>
+			<AbsDimension x="400" y="400"/>
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		
+		<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground"
+		edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="32"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		
+		<Frames>
+			
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT">
+						<Offset>
+							<AbsDimension x="-5" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						HideUIPanel(LazyScriptAboutFrame)
+					</OnClick>
+				</Scripts>
+			</Button>
+			
+			<ScrollFrame name="$parentScrollFrame" inherits="UIPanelScrollFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="15" y="-30"/>
+						</Offset>
+					</Anchor>
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parent" relativePoint="BOTTOMRIGHT">
+						<Offset>
+							<AbsDimension x="-35" y="12"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				
+				<Scripts>
+					<OnSizeChanged>
+						lazyScript.about.ScrollFrame_OnSizeChanged()
+					</OnSizeChanged>
+				</Scripts>
+				
+				<ScrollChild>
+					<SimpleHTML name="$parentText">
+						<Anchors>
+							<Anchor point="TOPLEFT">
+								<Offset>
+									<AbsDimension x="0" y="0"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						
+						<Scripts>
+							<OnShow>
+								this:SetWidth(this:GetParent():GetWidth()+40)
+								this:SetHeight(100)
+							</OnShow>
+						</Scripts>
+						
+						<FontString inherits="GameFontNormal">
+							<Color r="1" g="1" b="0.6"/>
+						</FontString>
+						<FontStringHeader1 inherits="GameFontHighlightLarge">
+							<Color r="1" g="1" b="1"/>
+						</FontStringHeader1>
+						<FontStringHeader2 inherits="GameFontNormal">
+							<Color r="1" g="0.5" b="0.25"/>
+						</FontStringHeader2>
+						<FontStringHeader3 inherits="GameFontNormal">
+							<Color r="1" g="0.5" b="0.3"/>
+						</FontStringHeader3>
+					</SimpleHTML>
+				</ScrollChild>
+			</ScrollFrame>
+			
+			<Button name="LazyScriptAboutFrameTab1" inherits="LazyScriptAboutFrameTabTemplate" id="1" text="About">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="BOTTOMLEFT">
+						<Offset>
+							<AbsDimension x="60" y="-10"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+			<Button name="LazyScriptAboutFrameTab2" inherits="LazyScriptAboutFrameTabTemplate" id="2" text="Contributors">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="LazyScriptAboutFrameTab1" relativePoint="RIGHT">
+						<Offset>
+							<AbsDimension x="-16" y="0"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+			</Button>
+			
+		</Frames>
+		
+		<Scripts>
+			<OnShow>
+				lazyScript.about.OnShow()
+			</OnShow>
+			<OnLoad>
+				lazyScript.metadata:updateRevisionFromKeyword("$Revision: 380 $")
+				this:RegisterForDrag("LeftButton")
+				tinsert(UISpecialFrames, this:GetName());
+				lazyScript.about.OnLoad()
+			</OnLoad>
+			<OnDragStart>
+				this:StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing()
+			</OnDragStop>
+			<OnMouseUp>
+				this:StopMovingOrSizing()
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+	
+</Ui>
