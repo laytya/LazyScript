@@ -2083,7 +2083,7 @@ function lazyScript.masks.TargetIsCasting(nameRegex)
 			lazyScript.d(KEY..k..VALUE..v.." SpellTypeRegex: "..nameRegex)
 			if string.upper(nameRegex) == string.upper(k) then
 				nameRegex = string.upper(v)
-				lazyScript.d(KEY_2..k..VALUE..v.." SpellTypeRegex: "..nameRegex)
+				lazyScript.d(MATCHKEY..k..VALUE..v.." SpellTypeRegex: "..nameRegex)
 				break
 			end
 		end
