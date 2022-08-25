@@ -53,7 +53,7 @@ lazyScript.metadata:updateRevisionFromKeyword("$Revision: 732 $")
 
 SLASH_LAZYSCRIPT1 = "/lazyscript"
 -- What about luaslinger?
--- SLASH_LAZYSCRIPT2 = "/ls"
+SLASH_LAZYSCRIPT2 = "/ls"
 
 BINDING_HEADER_LAZYSCRIPT = lazyScript.metadata.name
 
@@ -519,7 +519,7 @@ function lazyScript.OnEvent()
 		end
 		
 		elseif (event == "SPELLCAST_STOP") then
-		--lazyScript.d("Spellcast stop detected.")
+		lazyScript.d("Spellcast stop detected.")
 		if (lazyScript.spellcastInProgress) then
 			lazyScript.spellcastInProgress = false
 		end
@@ -531,7 +531,7 @@ function lazyScript.OnEvent()
 		end
 		
 		elseif (event == "SPELLCAST_INTERRUPTED") then
-		--lazyScript.d("Spellcast interruption detected.")
+		lazyScript.d("Spellcast interruption detected.")
 		if (lazyScript.spellcastInProgress) then
 			lazyScript.spellcastInProgress = false
 		end

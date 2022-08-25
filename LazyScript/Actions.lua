@@ -411,7 +411,7 @@ function lazyScript.CastSpellByRankAction:IsUsable(sayNothing)
 end
 
 function lazyScript.CastSpellByRankAction:Use()
-	lazyScript.d(ATTEMPTING_TO_CAST..self.code)
+	lazyScript.d(ATTEMPTING_TO_CAST..self.code.." to "..self.target)
 	local spellIndexStart, rankCount, maxRank = self.actionObj:FindSpellRanks(false)
 	local spellIndex = spellIndexStart + self.rank - 1
 	
@@ -419,6 +419,10 @@ function lazyScript.CastSpellByRankAction:Use()
 		local spellName, spellRank = GetSpellName(spellIndex, BOOKTYPE_SPELL)
 		local castSpellByNameName = spellName.."("..spellRank..")"
 		CastSpellByName(castSpellByNameName,1)
+		if SpellIsTargeting() then
+            SpellTargetUnit(self.target)
+		end
+        if SpellIsTargeting() then SpellStopTargeting() end
 		
 		elseif self.target == "target" then
 		CastSpell(spellIndex, "spell")
@@ -1594,10 +1598,10 @@ end
 
 function lazyScript.WhisperAction:Use()
 	local whisperTarget = self.recipient
-	
-	if lazyScript.validateUnitId(whisperTarget) then
-		if UnitExists(whisperTarget) then
-			whisperTarget = UnitName(whisperTarget)
+	local unitID = lazyScript.validateUnitId(whisperTarget)
+	if  unitID then
+		if UnitExists(unitID) then
+			whisperTarget = UnitName(unitID)
 			else
 			return
 		end

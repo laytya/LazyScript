@@ -206,8 +206,8 @@ function lazyScript.bitParsers.targetUnit(bit, actions, masks)
 	if (not lazyScript.rebit(bit, "^targetUnit=([%a%d]+)$")) then
 		return false
 	end
-	local unitId = lazyScript.match1
-	if not lazyScript.validateUnitId(unitId) then
+	local unitId = lazyScript.validateUnitId(lazyScript.match1)
+	if not unitId then
 		lazyScript.p(THE_UNITID..unitId..IS_NOT_VALID)
 		return nil
 	end
@@ -226,8 +226,8 @@ function lazyScript.bitParsers.spellTargetUnit(bit, actions, masks)
 	if (not lazyScript.rebit(bit, "^spellTargetUnit=([%a%d]+)$")) then
 		return false
 	end
-	local unitId = lazyScript.match1
-	if not lazyScript.validateUnitId(unitId) then
+	local unitId = lazyScript.validateUnitId(lazyScript.match1)
+	if not unitId then
 		lazyScript.p(THE_UNITID..unitId..IS_NOT_VALID)
 		return nil
 	end
@@ -1033,8 +1033,8 @@ function lazyScript.bitParsers.UnitHPMP(bit, actions, masks)
 	if (unitId == "") then
 		unitId = "player"
 	end
-	
-	if not lazyScript.validateUnitId(unitId) then
+	unitId = lazyScript.validateUnitId(unitId)
+	if not unitId then
 		lazyScript.p(unitId..IS_NOT_VALID_UNITID)
 		return nil
 	end
@@ -2332,6 +2332,33 @@ function lazyScript.bitParsers.ifZone(bit, actions, masks)
 	return true
 end
 
+-- LaYt
+function lazyScript.masks.GotTalent(nameRegex)
+	return function()
+		local tpts = lazyScript.masks.FindTalentPoints(nameRegex)
+		lazyScript.d("Search Talent:"..nameRegex)
+		lazyScript.d("Talent rank:"..tpts)
+		if (tpts > 0) then
+			return true
+		end
+		return false
+	end
+end
+
+function lazyScript.bitParsers.ifGotTalent(bit, actions, masks)
+	if (not lazyScript.rebit(bit, "^if(Not)?GotTalent=(.+)$")) then
+		return false
+	end
+	local negate = lazyScript.negate1()
+	local talents = lazyScript.match2
+	local subMasks = {}
+	for talent in string.gfind(talents, "[^,]+") do
+		table.insert(subMasks, lazyScript.masks.GotTalent(talent))
+	end
+	table.insert(masks, lazyScript.orWrapper(subMasks, negate))
+	return true
+end
+--/LaYt
 
 function lazyScript.masks.History(gtLtEq, val, action)
 	return function()
@@ -3095,6 +3122,10 @@ function lazyScript.masks.FindTalentPoints(icon)
 			if (thisIcon and string.find(thisIcon, icon)) then
 				lazyScript.talentCache[icon] = {GetTime(), rank}
 				return rank
+			elseif (name and string.find(name, icon)) then
+				lazyScript.d("icon:'"..icon.."' name:'"..name)
+				lazyScript.talentCache[icon] = {GetTime(), rank}
+				return rank
 			end
 		end
 	end
@@ -3164,6 +3195,14 @@ lazyScript.VALID_UNIT_IDS = {
 }
 
 function lazyScript.validateUnitId(unitId)
+	if  string.find(unitId, "^mouseover") then
+		local unitFF = lazyScript.GetUnitIdFromFrame()
+		if unitFF then
+			unitId = unitFF
+		else
+			unitId = "mouseover"
+		end
+	end
 	for _, validUnitId in ipairs(lazyScript.VALID_UNIT_IDS) do
 		s, e, base, n = string.find(unitId, validUnitId)
 		if s then
@@ -3173,16 +3212,16 @@ function lazyScript.validateUnitId(unitId)
             return false
 			end
 			
-			unitId = string.sub(unitId, e + 1)
-			if unitId == "" then
-				return true
+			local unit = string.sub(unitId, e + 1)
+			if unit == "" then
+				return unitId
 			end
 			
-			while string.sub(unitId, 1, 6) == "target" do
-				unitId = string.sub(unitId, 7)
+			while string.sub(unit, 1, 6) == "target" do
+				unit = string.sub(unit, 7)
 			end
-			if unitId == "" then
-				return true
+			if unit == "" then
+				return unitId
 			end
 			
 			break
@@ -3190,3 +3229,18 @@ function lazyScript.validateUnitId(unitId)
 	end
 	return false
 end
+
+function lazyScript.GetUnitIdFromFrame()
+	local frame = GetMouseFocus()
+	if (LunaUF and frame) then
+		return frame.unit
+	end
+	if (pfUI and frame and frame.label and frame.id) then
+        return frame.label .. frame.id
+	end
+	if (NotGrid and frame and frame.unit) then
+		return frame.unit
+	end
+	return nil
+end
+	

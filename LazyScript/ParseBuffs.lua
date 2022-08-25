@@ -444,7 +444,8 @@ function lazyScript.bitParsers.ifBuffActive(bit, actions, masks)
 		unitId = "player"
 	end
 	
-	if not lazyScript.validateUnitId(unitId) then
+	unitId = lazyScript.validateUnitId(unitId)
+	if not unitId then
 		lazyScript.p(unitId..IS_NOT_VALID_UNITID)
 		return nil
 	end
@@ -525,7 +526,8 @@ function lazyScript.bitParsers.ifHasBuffTitle(bit, actions, masks)
 		unitId = "player"
 	end
 	
-	if not lazyScript.validateUnitId(unitId) then
+	unitId = lazyScript.validateUnitId(unitId)
+	if not unitId then
 		lazyScript.p(unitId..IS_NOT_VALID_UNITID)
 		return nil
 	end
@@ -762,7 +764,8 @@ function lazyScript.bitParsers.ifIsBuffed(bit, actions, masks)
 		unitId = "player"
 	end
 	
-	if not lazyScript.validateUnitId(unitId) then
+	unitId = lazyScript.validateUnitId(unitId)
+	if not unitId then
 		lazyScript.p(unitId..IS_NOT_VALID_UNITID)
 		return nil
 	end

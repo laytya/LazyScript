@@ -219,7 +219,7 @@ function lazyScript.efind(text, pattern)
 end
 
 function lazyScript.ListBuffs()
-	for id=0,15 do
+	for id=0,31 do
 		local index = GetPlayerBuff(id, "HELPFUL")
 		local texture = GetPlayerBuffTexture(index)
 		if texture == nil then
@@ -228,7 +228,7 @@ function lazyScript.ListBuffs()
 		lazyScript.p("Helpful Buff #"..id.." ("..index..") = "..texture)
 	end
 	
-	for id=0,15 do
+	for id=0,31 do
 		local index = GetPlayerBuff(id, "HARMFUL")
 		local texture = GetPlayerBuffTexture(index)
 		if texture == nil then

@@ -73,6 +73,12 @@ function lazyScript.ParseLine(line)
 			rank = tonumber(lazyScript.match2)
 		end
 		
+		local smart
+		if (lazyScript.rebit(bit, "(.*)%(smart%)")) then
+			bit = lazyScript.match1
+			smart = true
+		end
+
 		local foundBit = false
 		for key, bitParser in pairs(lazyScript.bitParsers) do
 			local bitResult = bitParser(bit, actions, masks)
@@ -108,11 +114,21 @@ function lazyScript.ParseLine(line)
 			target = "player"
 		end
 		
-		if (target ~= "" and (not lazyScript.validateUnitId(target))) then
+		local targetV = lazyScript.validateUnitId(target)
+		if (target ~= "" and (not targetV)) then
 			lazyScript.p(THE_UNITID..target..IS_NOT_VALID)
 			return nil
 		end
 		
+		if target ~= "" then 
+			target = targetV
+		end
+		if smart and LazySpell then
+			local lastActionObj = actions[table.getn(actions)]
+			local spellIndex, _, _ = lastActionObj:FindSpellRanks(false)
+			local spellName, _ = GetSpellName(spellIndex, BOOKTYPE_SPELL)
+			rank = LazySpell:GetSmartSpell(spellName,target)
+		end
 		if rank then
 			local lastActionObj = actions[table.getn(actions)]
 			local rankAction = lazyScript.castSpellByRankActions[lastActionObj.code..rank.."@"..target]
@@ -134,7 +150,6 @@ function lazyScript.ParseLine(line)
 			end
 			table.remove(actions, table.getn(actions))
 			table.insert(actions, rankAction)
-			
 			elseif (not rank) and target ~= "" then
 			local lastActionObj = actions[table.getn(actions)]
 			local rankAction = lazyScript.castSpellByRankActions[lastActionObj.code.."@"..target]
