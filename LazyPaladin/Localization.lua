@@ -51,7 +51,7 @@ function lazyPaladinLoad.LoadPaladinLocalization(locale)
 	lazyPaladinLocale.enUS.ACTION_TTS.sealRight     = "Seal of Righteousness"
 	lazyPaladinLocale.enUS.ACTION_TTS.sealWisdom    = "Seal of Wisdom"
 	lazyPaladinLocale.enUS.ACTION_TTS.senseUndead   = "Sense Undead"
-	lazyPaladinLocale.ruRU.ACTION_TTS.smnCharger	= "Summon Charger"
+	lazyPaladinLocale.enUS.ACTION_TTS.smnCharger	= "Summon Charger"
 	lazyPaladinLocale.enUS.ACTION_TTS.smnWarhorse   = "Summon Warhorse"
 	lazyPaladinLocale.enUS.ACTION_TTS.turnUndead    = "Turn Undead"
 	
