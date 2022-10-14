@@ -206,7 +206,13 @@ function lazyScript.ParseLine(line)
 	local printTrigger
 	if table.getn(actions) > 1 then
 		for _, actionObj in ipairs(actions) do
-			if (actionObj.triggersGlobal) then printTrigger = "true" elseif (not actionObj.triggersGlobal) then printTrigger = "false" else printTrigger = "nil" end
+			if (actionObj.triggersGlobal) then
+				printTrigger = "true"
+			elseif (not actionObj.triggersGlobal) then
+				printTrigger = "false"
+			else
+				printTrigger = "nil"
+			end
 			lazyScript.d("Action: "..actionObj.code..", TriggersGlobal: "..printTrigger)
 			if (actionObj.triggersGlobal) then
 				triggerActions = triggerActions + 1
@@ -358,7 +364,6 @@ function lazyScript.ReparseDependentForms(formName)
 	end
 	return reparsed
 end
-
 
 -- Find forms which depend on the given form name and remove them from the parsedFormCache
 -- Returns a table of the form names which were cleared

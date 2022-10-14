@@ -253,7 +253,6 @@ function lazyScript.Action:FindSpellRanks(sayNothing)
 	return spellIndexStart, rankCount, maxRank
 end
 
-
 function lazyScript.Action:FindSpellRanksByName(sayNothing)
 	if not self.name then
 		return nil
@@ -323,7 +322,6 @@ function lazyScript.Action:FindSpellRanksByName(sayNothing)
 	return spellIndexStart, rankCount, maxRank
 end
 
-
 function lazyScript.Action:Use()
 	lazyScript.d(ACTION_1..self.name)
 	local spellIndexStart, rankCount, maxRank = self:FindSpellRanks(false)
@@ -348,13 +346,12 @@ end
 function lazyScript.Action:IsUsable(sayNothing)
 	-- Run this here to make Action:Use quicker by not always having to search the spell book
 	local spellIndexStart, rankCount, maxRank = self:FindSpellRanks(sayNothing)
-	
 	if (self:GetSlot(sayNothing)) then
 		local inRange = IsActionInRange(self.slot)
 		if (IsUsableAction(self.slot) == 1 and
             GetActionCooldown(self.slot) == 0 and   -- not in cooldown
             not IsCurrentAction(self.slot) and      -- not already being used
-		(inRange == 1 or inRange == nil)) then
+			(inRange == 1 or inRange == nil or self.parent.target == "player")) then
 		return true
 		end
 	end
@@ -386,14 +383,13 @@ function lazyScript.Action:GetRank()
 	return self.rank
 end
 
-
-
 -- For casting actions by rank
 lazyScript.CastSpellByRankAction = {}
 function lazyScript.CastSpellByRankAction:New(actionObj, rank, target)
 	local obj = {}
 	setmetatable(obj, { __index = self })
 	obj.actionObj = actionObj
+	actionObj.parent = obj
 	obj.code = actionObj.code                             -- short name reported in History
 	obj.rank = rank                                       -- rank that you want to cast
 	obj.name = actionObj.name
@@ -406,6 +402,7 @@ function lazyScript.CastSpellByRankAction:New(actionObj, rank, target)
 end
 
 function lazyScript.CastSpellByRankAction:IsUsable(sayNothing)
+
 	local spellIndexStart, rankCount, maxRank = self.actionObj:FindSpellRanks(sayNothing)
 	return (self.actionObj:IsUsable(sayNothing) and (spellIndexStart ~= nil))
 end
@@ -442,8 +439,6 @@ function lazyScript.CastSpellByRankAction:Use()
 	self.nowAndEveryTimer = self.everyTimer
 	self.actionObj.everyTimer = self.everyTimer
 end
-
-
 
 -- Helper functions
 
@@ -488,7 +483,6 @@ function lazyScript.DeCacheItemSlots()
 		item.slotCheckedSinceUpdate = false
 	end
 end
-
 
 -- ComboAction Objects
 
@@ -749,7 +743,6 @@ function lazyScript.Item:IsUsable(sayNothing)
 	return false
 end
 
-
 function lazyScript.Item:GetItemSlot(sayNothing)
 	local bag = self.bag
 	local slot = self.slot
@@ -838,8 +831,6 @@ function lazyScript.Item:GetItemSlot(sayNothing)
 	return slot, bag
 end
 
-
-
 -- Apply Weapon Buff Objects
 lazyScript.ApplyWeaponBuff ={}
 
@@ -867,7 +858,6 @@ function lazyScript.ApplyWeaponBuff:New(code, weaponBuffName, equipSlot)
 	return obj
 end
 
-
 function lazyScript.ApplyWeaponBuff:Use()
 	if (not self.slot) or (not self.bag) then
 		-- wtf?
@@ -886,7 +876,6 @@ function lazyScript.ApplyWeaponBuff:Use()
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
 end
-
 
 function lazyScript.ApplyWeaponBuff:IsUsable(sayNothing)
 	local slot = self.slot
@@ -916,13 +905,13 @@ function lazyScript.ApplyWeaponBuff:IsUsable(sayNothing)
 	
 	if itemType ~= "Weapon" then
 		if not sayNothing then
-			lazyScript.d(APPLYWEAPONBUFF..self.name..IN..self.equipSlot..ITEM_TYPE_IS_NOT_WEAPON..lazyScript.safeString(itemType))
+			lazyScript.d(APPLYWEAPONBUFF ..
+				self.name .. IN .. self.equipSlot .. ITEM_TYPE_IS_NOT_WEAPON .. lazyScript.safeString(itemType))
 		end
 		return false
 	end
 	return true
 end
-
 
 -- Inventory item helper functions
 function lazyScript.IsItemStillHere(idOrName, slot, bag, sayNothing)
@@ -955,7 +944,6 @@ function lazyScript.IsItemStillHere(idOrName, slot, bag, sayNothing)
 	return false
 end
 
-
 function lazyScript.SearchBags(idOrName, sayNothing)
 	local slot, bag
 	local itemId, itemName
@@ -985,8 +973,6 @@ function lazyScript.SearchBags(idOrName, sayNothing)
 	
 	return slot, bag
 end
-
-
 
 -- PseudoAction Objects
 
@@ -1037,7 +1023,8 @@ function lazyScript.pseudoActions.assist:IsUsable(sayNothing)
 	-- If we haven't determined the assist's party/raid unitId yet or if the
 	-- player for the unitId is not our assist, scan the party/raid to find
 	-- the assist's unitId.
-	if (lazyScript.assistUnitId == nil or string.lower(UnitName(lazyScript.assistUnitId) or "") ~= string.lower(lazyScript.assistName)) then
+	if ( lazyScript.assistUnitId == nil or
+			string.lower(UnitName(lazyScript.assistUnitId) or "") ~= string.lower(lazyScript.assistName)) then
 		lazyScript.assistUnitId = lazyScript.findPlayerUnitId(lazyScript.assistName)
 		if (lazyScript.assistUnitId == nil) then
 			if (not sayNothing) then
@@ -1113,7 +1100,8 @@ end
 
 lazyScript.pseudoActions.targetNearest.IsUsable = lazyScript.AlwaysUsable
 
-lazyScript.pseudoActions.targetNearestFriend = lazyScript.PseudoAction:New("targetNearestFriend", "Target Nearest Friend", false)
+lazyScript.pseudoActions.targetNearestFriend = lazyScript.PseudoAction:New("targetNearestFriend", "Target Nearest Friend"
+	, false)
 function lazyScript.pseudoActions.targetNearestFriend:Use()
 	-- this pseudo action always succeeds, so no action after it will be executed
 	TargetNearestFriend()
@@ -1285,7 +1273,6 @@ function lazyScript.pseudoActions.wand:IsUsable(sayNothing)
 	return (not lazyScript.IsAutoWanding(sayNothing))
 end
 
-
 lazyScript.pseudoActions.stopShot = lazyScript.PseudoAction:New("stopShot", "Stop Auto Shot", false)
 function lazyScript.pseudoActions.stopShot:Use()
 	lazyScript.StopAutoShot()
@@ -1320,7 +1307,6 @@ function lazyScript.pseudoActions.autoShot:IsUsable(sayNothing)
 	return (not lazyScript.IsAutoShooting(sayNothing))
 end
 
-
 lazyScript.pseudoActions.clearTarget = lazyScript.PseudoAction:New("clearTarget", "Clear Target", false)
 function lazyScript.pseudoActions.clearTarget:Use()
 	ClearTarget()
@@ -1347,7 +1333,6 @@ function lazyScript.pseudoActions.stopCasting:IsUsable(sayNothing)
 	return false
 end
 
-
 lazyScript.pseudoActions.clearHistory = lazyScript.PseudoAction:New("clearHistory", "Clear History", false)
 function lazyScript.pseudoActions.clearHistory:Use()
 	lazyScript.actionHistory = {}
@@ -1362,7 +1347,6 @@ function lazyScript.pseudoActions.clearHistory:IsUsable(sayNothing)
 	return false
 end
 
-
 lazyScript.actionHistory = {}
 function lazyScript.recordAction(action)
 	-- add to the front, remove from the end
@@ -1376,7 +1360,6 @@ function lazyScript.recordAction(action)
 		end
 	end
 end
-
 
 function lazyScript.findPlayerUnitId(name)
 	if (lazyScript.masks.PlayerInRaid()) then
@@ -1833,7 +1816,6 @@ function lazyScript.pseudoActions.petStop:IsUsable(sayNothing)
 	return (UnitExists("pettarget"))
 end
 
-
 -- Cancel Player Buff
 lazyScript.CancelBuffAction = {}
 function lazyScript.CancelBuffAction:New(code, name, texture)
@@ -1884,7 +1866,6 @@ function lazyScript.CancelBuffAction:FindPlayerBuff(sayNothing)
 	return nil
 end
 
-
 -- Call Form
 lazyScript.CallFormAction = {}
 function lazyScript.CallFormAction:New(form)
@@ -1918,7 +1899,6 @@ function lazyScript.CallFormAction:IsUsable(sayNothing)
 	return actionObj ~= nil
 end
 
-
 -- Target Unit
 lazyScript.TargetUnitAction = {}
 function lazyScript.TargetUnitAction:New(unitId)
@@ -1947,7 +1927,6 @@ function lazyScript.TargetUnitAction:IsUsable(sayNothing)
 	return UnitExists(self.unitId) == 1
 end
 
-
 -- Spell Target Unit
 lazyScript.SpellTargetUnitAction = {}
 function lazyScript.SpellTargetUnitAction:New(unitId)
@@ -1975,7 +1954,6 @@ end
 function lazyScript.SpellTargetUnitAction:IsUsable(sayNothing)
 	return UnitExists(self.unitId) == 1
 end
-
 
 -- Target By Name
 lazyScript.TargetByNameAction = {}
