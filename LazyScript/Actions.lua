@@ -351,7 +351,7 @@ function lazyScript.Action:IsUsable(sayNothing)
 		if (IsUsableAction(self.slot) == 1 and
             GetActionCooldown(self.slot) == 0 and   -- not in cooldown
             not IsCurrentAction(self.slot) and      -- not already being used
-			(inRange == 1 or inRange == nil or self.parent.target == "player")) then
+			(inRange == 1 or inRange == nil or (self.parent and self.parent.target == "player"))) then
 		return true
 		end
 	end
