@@ -10,57 +10,57 @@ lazyScript.Action = {}
 function lazyScript.Action:New(code, texture, interrupts, triggersGlobal, problemTexture, name)
 	local obj = {}
 	setmetatable(obj, { __index = self })
-	obj.code = code                        -- short name reported in History
-	obj.codePattern = "^"..code.."$"       -- used for looking up actions from the table
+	obj.code = code -- short name reported in History
+	obj.codePattern = "^" .. code .. "$" -- used for looking up actions from the table
 	obj:InitTexture(texture)
-	obj.interrupts = interrupts            -- can it interrupt
-	obj.slot = nil                         -- the action slot # on the action bar
-	obj.slotCheckedSinceUpdate = nil       -- has the slot been checked since an ActionBarSlotChanged event?
-	obj.rank = nil                         -- highest rank of action
+	obj.interrupts = interrupts -- can it interrupt
+	obj.slot = nil -- the action slot # on the action bar
+	obj.slotCheckedSinceUpdate = nil -- has the slot been checked since an ActionBarSlotChanged event?
+	obj.rank = nil -- highest rank of action
 	obj.spellIndexStart = nil
 	obj.rankCount = nil
-	obj.maxRank = nil                      -- highest rank of action
-	obj.everyTimer = 0                     -- initialize timer for -everyXXs mask
+	obj.maxRank = nil -- highest rank of action
+	obj.everyTimer = 0 -- initialize timer for -everyXXs mask
 	obj.nowAndEveryTimer = 0
-	
+
 	-- Full name used for tooltip matching. English is ok if we can't find a match.
 	if (name ~= nil) then
 		obj.name = name
-		else
-		obj.name = lazyScript.getLocaleString("ACTION_TTS."..code, true)
+	else
+		obj.name = lazyScript.getLocaleString("ACTION_TTS." .. code, true)
 	end
-	
-	if (triggersGlobal ~= nil) then  -- does it trigger the global cooldown
+
+	if (triggersGlobal ~= nil) then -- does it trigger the global cooldown
 		obj.triggersGlobal = triggersGlobal
-		else
+	else
 		obj.triggersGlobal = true
 	end
-	
+
 	if (problemTexture ~= nil) then
 		obj.problemTexture = problemTexture
 		if not lazyScript.getLocaleString("ACTION_TTS", false, true) then
-			lazyScript.p(ACTION..code..NOT_SUPPORTED_PLS_USE)
+			lazyScript.p(ACTION .. code .. NOT_SUPPORTED_PLS_USE)
 		end
-		else
+	else
 		obj.problemTexture = false
 	end
-	
+
 	obj.requiresSpellStopCasting = true
-	
+
 	return obj
 end
 
 function lazyScript.Action:InitTexture(texture)
 	if texture == nil then
 		self.texture = nil
-		elseif type(texture) == "string" then
-		self.texture = LS_TEXTURE_PREFIX..texture
-		elseif type(texture) == "table" then
+	elseif type(texture) == "string" then
+		self.texture = LS_TEXTURE_PREFIX .. texture
+	elseif type(texture) == "table" then
 		for idx, value in ipairs(texture) do
-			texture[idx] = LS_TEXTURE_PREFIX..value
+			texture[idx] = LS_TEXTURE_PREFIX .. value
 		end
 		self.texture = texture
-		else
+	else
 		error(ERROR_TYPE_TEXTURE)
 	end
 end
@@ -68,9 +68,9 @@ end
 function lazyScript.Action:CompareTexture(texture)
 	if texture == nil or self.texture == nil then
 		return false
-		elseif type(self.texture) == "string" then
+	elseif type(self.texture) == "string" then
 		return (self.texture == texture)
-		elseif type(self.texture) == "table" then
+	elseif type(self.texture) == "table" then
 		for _, value in ipairs(self.texture) do
 			if value == texture then
 				return true
@@ -92,26 +92,26 @@ function lazyScript.Action:GetSlot(sayNothing)
 								self.slotCheckedSinceUpdate = true
 								return self.slot
 							end
-							else
+						else
 							self.slotCheckedSinceUpdate = true
 							return self.slot
 						end
 					end
 				end
-				else
+			else
 				if (lazyScript.GetActionNameFromTooltip(self.slot) == self.name) then
 					self.slotCheckedSinceUpdate = true
 					return self.slot
 				end
 			end
-			else
+		else
 			return self.slot
 		end
 	end
-	
+
 	-- If we get here then we don't have a slot or it has changed
 	self.slot = nil
-	
+
 	if (not self.slot) then
 		for slot = 1, 120 do
 			local thisTexture = GetActionTexture(slot)
@@ -129,20 +129,20 @@ function lazyScript.Action:GetSlot(sayNothing)
 						if (thisTexture and self:CompareTexture(thisTexture)) then
 							if (self.problemTexture) then
 								if (lazyScript.GetActionNameFromTooltip(slot) == self.name) then
-									lazyScript.d(FOUND..self.name..AT_SLOT..slot)
+									lazyScript.d(FOUND .. self.name .. AT_SLOT .. slot)
 									self.slot = slot
 									break
 								end
-								else
-								lazyScript.d(FOUND..lazyScript.safeString(self.name)..AT_SLOT..slot)
+							else
+								lazyScript.d(FOUND .. lazyScript.safeString(self.name) .. AT_SLOT .. slot)
 								self.slot = slot
 								break
 							end
 						end
 					end
-					else
+				else
 					if (lazyScript.GetActionNameFromTooltip(slot) == self.name) then
-						lazyScript.d(FOUND..lazyScript.safeString(self.name)..AT_SLOT..slot)
+						lazyScript.d(FOUND .. lazyScript.safeString(self.name) .. AT_SLOT .. slot)
 						self.slot = slot
 						break
 					end
@@ -150,14 +150,14 @@ function lazyScript.Action:GetSlot(sayNothing)
 			end
 		end
 	end
-	
+
 	if (not self.slot) then
 		if (not sayNothing) then
-			lazyScript.p(COULDNT_FIND..lazyScript.safeString(self.name)..ADD_IT_PLAYER)
+			lazyScript.p(COULDNT_FIND .. lazyScript.safeString(self.name) .. ADD_IT_PLAYER)
 		end
 		return nil
 	end
-	
+
 	return self.slot
 end
 
@@ -167,69 +167,69 @@ function lazyScript.Action:FindSpellRanks(sayNothing)
 	if not self.texture then
 		return nil
 	end
-	
+
 	if self.spellIndexStart and self.rankCount then
 		return self.spellIndexStart, self.rankCount, self.maxRank
 	end
-	
+
 	local spellIndexStart
 	for spellIndex = 1, 1000 do
-		local texture = GetSpellTexture(spellIndex,"spell")
+		local texture = GetSpellTexture(spellIndex, "spell")
 		if (not texture) then
 			if not sayNothing then
-				lazyScript.d(SPELLSEARCH_FOUND_NIL_TEXTURE..spellIndex..".")
+				lazyScript.d(SPELLSEARCH_FOUND_NIL_TEXTURE .. spellIndex .. ".")
 			end
 			return nil
 		end
 		if (self:CompareTexture(texture)) then
 			if self.problemTexture then
-				if GetSpellName(spellIndex,"spell") == self.name then
+				if GetSpellName(spellIndex, "spell") == self.name then
 					if not sayNothing then
-						lazyScript.d(SPELLSEARCH_FOUND..self.code..AT_INDEX..spellIndex..".")
+						lazyScript.d(SPELLSEARCH_FOUND .. self.code .. AT_INDEX .. spellIndex .. ".")
 					end
 					spellIndexStart = spellIndex
 					break
 				end
-				else
+			else
 				if not sayNothing then
-					lazyScript.d(SPELLSEARCH_FOUND..self.code..AT_INDEX..spellIndex..".")
+					lazyScript.d(SPELLSEARCH_FOUND .. self.code .. AT_INDEX .. spellIndex .. ".")
 				end
 				spellIndexStart = spellIndex
 				break
 			end
 		end
 	end
-	
+
 	if not spellIndexStart then
 		if not sayNothing then
 			lazyScript.d(SPELLSEARCH_QUANTITY)
 		end
 		return nil
 	end
-	
-	
+
+
 	local rankCount = 0
 	for spellRank = 1, 99 do
 		spellIndex = spellIndexStart + spellRank - 1
-		
-		local texture = GetSpellTexture(spellIndex,"spell")
+
+		local texture = GetSpellTexture(spellIndex, "spell")
 		if (not texture) then
 			if not sayNothing then
-				lazyScript.d(SPELLSEARCH_FOUND_NIL_TEXTURE..spellIndex..RANK_COUNT..rankCount)
+				lazyScript.d(SPELLSEARCH_FOUND_NIL_TEXTURE .. spellIndex .. RANK_COUNT .. rankCount)
 			end
 			break
 		end
-		lazyScript.d(RANK_COUNT_2..rankCount..TEXTURE..texture)
+		lazyScript.d(RANK_COUNT_2 .. rankCount .. TEXTURE .. texture)
 		if (not self:CompareTexture(texture)) then
 			if not sayNothing then
-				lazyScript.d(SPELLSEARCH_STOP..self.code..AT_INDEX..spellIndex..RANK_COUNT..rankCount)
+				lazyScript.d(SPELLSEARCH_STOP .. self.code .. AT_INDEX .. spellIndex .. RANK_COUNT .. rankCount)
 			end
 			break
-			else
+		else
 			if self.problemTexture then
-				if GetSpellName(spellIndex,"spell") ~= self.name then
+				if GetSpellName(spellIndex, "spell") ~= self.name then
 					if not sayNothing then
-						lazyScript.d(SPELLSEARCH_STOP..self.code..AT_INDEX..spellIndex..RANK_COUNT..rankCount)
+						lazyScript.d(SPELLSEARCH_STOP .. self.code .. AT_INDEX .. spellIndex .. RANK_COUNT .. rankCount)
 					end
 					break
 				end
@@ -237,7 +237,7 @@ function lazyScript.Action:FindSpellRanks(sayNothing)
 			rankCount = rankCount + 1
 		end
 	end
-	
+
 	local maxRank
 	local _, spellRank = GetSpellName(spellIndexStart + rankCount - 1, BOOKTYPE_SPELL)
 	if spellRank ~= "" then
@@ -245,11 +245,11 @@ function lazyScript.Action:FindSpellRanks(sayNothing)
 			maxRank = tonumber(lazyScript.match1)
 		end
 	end
-	
+
 	self.spellIndexStart = spellIndexStart
 	self.maxRank = maxRank
 	self.rankCount = rankCount
-	
+
 	return spellIndexStart, rankCount, maxRank
 end
 
@@ -257,56 +257,56 @@ function lazyScript.Action:FindSpellRanksByName(sayNothing)
 	if not self.name then
 		return nil
 	end
-	
+
 	if self.spellIndexStart and self.rankCount then
 		return self.spellIndexStart, self.rankCount, self.maxRank
 	end
-	
+
 	local spellIndexStart
 	for spellIndex = 1, 1000 do
-		local spellName = GetSpellName(spellIndex,"spell")
+		local spellName = GetSpellName(spellIndex, "spell")
 		if (not spellName) then
 			if not sayNothing then
-				lazyScript.d(SPELLSEARCH_FOUND_NIL_NAME..spellIndex..".")
+				lazyScript.d(SPELLSEARCH_FOUND_NIL_NAME .. spellIndex .. ".")
 			end
 			return nil
 		end
 		if (spellName == self.name) then
 			if not sayNothing then
-				lazyScript.d(SPELLSEARCH_FOUND..self.code..AT_INDEX..spellIndex..".")
+				lazyScript.d(SPELLSEARCH_FOUND .. self.code .. AT_INDEX .. spellIndex .. ".")
 			end
 			spellIndexStart = spellIndex
 			break
 		end
 	end
-	
+
 	if not spellIndexStart then
 		lazyScript.d(SPELLSEARCH_QUANTITY)
 		return nil
 	end
-	
-	
+
+
 	local rankCount = 0
 	for spellRank = 1, 99 do
 		spellIndex = spellIndexStart + spellRank - 1
-		
-		local spellName, _ = GetSpellName(spellIndex,"spell")
+
+		local spellName, _ = GetSpellName(spellIndex, "spell")
 		if (not spellName) then
 			if not sayNothing then
-				lazyScript.d(SPELLSEARCH_FOUND_NIL_NAME..spellIndex..RANK_COUNT..rankCount)
+				lazyScript.d(SPELLSEARCH_FOUND_NIL_NAME .. spellIndex .. RANK_COUNT .. rankCount)
 			end
 			break
 		end
 		if (not (spellName == self.name)) then
 			if not sayNothing then
-				lazyScript.d(SPELLSEARCH_STOP..self.code..AT_INDEX..spellIndex..RANK_COUNT..rankCount)
+				lazyScript.d(SPELLSEARCH_STOP .. self.code .. AT_INDEX .. spellIndex .. RANK_COUNT .. rankCount)
 			end
 			break
-			else
+		else
 			rankCount = rankCount + 1
 		end
 	end
-	
+
 	local maxRank
 	local _, spellRank = GetSpellName(spellIndexStart + rankCount - 1, BOOKTYPE_SPELL)
 	if spellRank ~= "" then
@@ -314,30 +314,30 @@ function lazyScript.Action:FindSpellRanksByName(sayNothing)
 			maxRank = tonumber(lazyScript.match1)
 		end
 	end
-	
+
 	self.spellIndexStart = spellIndexStart
 	self.maxRank = maxRank
 	self.rankCount = rankCount
-	
+
 	return spellIndexStart, rankCount, maxRank
 end
 
 function lazyScript.Action:Use()
-	lazyScript.d(ACTION_1..self.name)
+	lazyScript.d(ACTION_1 .. self.name)
 	local spellIndexStart, rankCount, maxRank = self:FindSpellRanks(false)
-	
+
 	if spellIndexStart then
 		local spellIndex = spellIndexStart + rankCount - 1
 		CastSpell(spellIndex, "spell")
-		else
+	else
 		UseAction(self.slot)
 	end
-	
+
 	if (self.interrupts and lazyScript.interrupt.targetCasting) then
 		lazyScript.interrupt.lastSpellInterrupted = lazyScript.interrupt.targetCasting
 		lazyScript.interrupt.targetCasting = nil
 	end
-	
+
 	lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
@@ -349,10 +349,10 @@ function lazyScript.Action:IsUsable(sayNothing)
 	if (self:GetSlot(sayNothing)) then
 		local inRange = IsActionInRange(self.slot)
 		if (IsUsableAction(self.slot) == 1 and
-            GetActionCooldown(self.slot) == 0 and   -- not in cooldown
-            not IsCurrentAction(self.slot) and      -- not already being used
+			GetActionCooldown(self.slot) == 0 and -- not in cooldown
+			not IsCurrentAction(self.slot) and -- not already being used
 			(inRange == 1 or inRange == nil or (self.parent and self.parent.target == "player"))) then
-		return true
+			return true
 		end
 	end
 	return false
@@ -377,7 +377,7 @@ function lazyScript.Action:GetRank()
 		end
 	end
 	if (not self.rank) then
-		lazyScript.p(COULDNT_FIND..self.name..IN_SPELL_BOOK)
+		lazyScript.p(COULDNT_FIND .. self.name .. IN_SPELL_BOOK)
 		return 0
 	end
 	return self.rank
@@ -390,13 +390,13 @@ function lazyScript.CastSpellByRankAction:New(actionObj, rank, target)
 	setmetatable(obj, { __index = self })
 	obj.actionObj = actionObj
 	actionObj.parent = obj
-	obj.code = actionObj.code                             -- short name reported in History
-	obj.rank = rank                                       -- rank that you want to cast
+	obj.code = actionObj.code -- short name reported in History
+	obj.rank = rank -- rank that you want to cast
 	obj.name = actionObj.name
 	obj.triggersGlobal = actionObj.triggersGlobal
 	obj.target = target
 	obj.requiresSpellStopCasting = actionObj.requiresSpellStopCasting
-	obj.everyTimer = 0                                    -- initialize timer for -everyXXs mask
+	obj.everyTimer = 0 -- initialize timer for -everyXXs mask
 	obj.nowAndEveryTimer = 0
 	return obj
 end
@@ -408,32 +408,32 @@ function lazyScript.CastSpellByRankAction:IsUsable(sayNothing)
 end
 
 function lazyScript.CastSpellByRankAction:Use()
-	lazyScript.d(ATTEMPTING_TO_CAST..self.code.." to "..self.target)
+	lazyScript.d(ATTEMPTING_TO_CAST .. self.code .. " to " .. self.target)
 	local spellIndexStart, rankCount, maxRank = self.actionObj:FindSpellRanks(false)
 	local spellIndex = spellIndexStart + self.rank - 1
-	
+
 	if self.target == "player" then
 		local spellName, spellRank = GetSpellName(spellIndex, BOOKTYPE_SPELL)
-		local castSpellByNameName = spellName.."("..spellRank..")"
-		CastSpellByName(castSpellByNameName,1)
+		local castSpellByNameName = spellName .. "(" .. spellRank .. ")"
+		CastSpellByName(castSpellByNameName, 1)
 		if SpellIsTargeting() then
-            SpellTargetUnit(self.target)
+			SpellTargetUnit(self.target)
 		end
-        if SpellIsTargeting() then SpellStopTargeting() end
-		
-		elseif self.target == "target" then
+		if SpellIsTargeting() then SpellStopTargeting() end
+
+	elseif self.target == "target" then
 		CastSpell(spellIndex, "spell")
-		
-		elseif self.target ~= "" then
+
+	elseif self.target ~= "" then
 		TargetUnit(self.target)
 		CastSpell(spellIndex, "spell")
 		TargetLastTarget()
-		
-		elseif self.target == "" then
+
+	elseif self.target == "" then
 		CastSpell(spellIndex, "spell")
-		
+
 	end
-	
+
 	lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
@@ -491,7 +491,7 @@ function lazyScript.ComboAction:New(code, name, ...)
 	local obj = {}
 	setmetatable(obj, { __index = self })
 	obj.code = code
-	obj.codePattern = "^"..code.."$"
+	obj.codePattern = "^" .. code .. "$"
 	obj.name = name
 	obj.triggersGlobal = true
 	obj.actions = {}
@@ -508,12 +508,12 @@ function lazyScript.ComboAction:Use()
 	for _, action in ipairs(self.actions) do
 		if (first) then
 			first = false
-			else
+		else
 			SpellStopCasting()
 		end
 		action:Use()
 	end
-	
+
 	lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
@@ -533,9 +533,9 @@ end
 lazyScript.SetForm = {}
 function lazyScript.SetForm:New(code, name)
 	local obj = {}
-	setmetatable(obj, { __index = self})
+	setmetatable(obj, { __index = self })
 	obj.code = code
-	obj.codePattern = "^"..code.."$"
+	obj.codePattern = "^" .. code .. "$"
 	obj.name = name
 	obj.triggersGlobal = false
 	obj.requiresSpellStopCasting = false
@@ -545,7 +545,7 @@ function lazyScript.SetForm:New(code, name)
 end
 
 function lazyScript.SetForm:Use()
-	lazyScript.SlashCommand("default "..self.name.." quiet")
+	lazyScript.SlashCommand("default " .. self.name .. " quiet")
 	lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
@@ -558,12 +558,12 @@ lazyScript.SetForm.IsUsable = lazyScript.AlwaysUsable
 
 lazyScript.EquipItem = {}
 function lazyScript.EquipItem:New(code, name, id, equipSlot)
-	local obj ={}
+	local obj = {}
 	setmetatable(obj, { __index = self })
 	obj.code = code
-	obj.codePattern = "^"..code.."$"
+	obj.codePattern = "^" .. code .. "$"
 	obj.name = name
-	obj.triggersGlobal = true  -- weapon switching triggers a cooldown in combat
+	obj.triggersGlobal = true -- weapon switching triggers a cooldown in combat
 	obj.id = id
 	obj.equipSlot = equipSlot
 	obj.requiresSpellStopCasting = false
@@ -571,13 +571,13 @@ function lazyScript.EquipItem:New(code, name, id, equipSlot)
 	obj.nowAndEveryTimer = 0
 	obj.bag = nil
 	obj.slot = nil
-	obj.slotCheckedSinceUpdate = nil       -- has the slot been checked since a BAG_UPDATE event?
+	obj.slotCheckedSinceUpdate = nil -- has the slot been checked since a BAG_UPDATE event?
 	return obj
 end
 
 function lazyScript.EquipItem:Use()
 	local slot, bag = self:GetItemSlot()
-	
+
 	PickupContainerItem(bag, slot)
 	EquipCursorItem(self.equipSlot)
 	lazyScript.recordAction(self.code)
@@ -600,15 +600,15 @@ function lazyScript.EquipItem:IsUsable(sayNothing)
 			end
 		end
 	end
-	
+
 	local slot, bag = self:GetItemSlot(sayNothing)
-	
+
 	if bag and slot then
 		return true
 	end
-	
+
 	if (not sayNothing) then
-		lazyScript.d(ITEM_NOT_FOUND..lazyScript.safeString(self.name or self.id))
+		lazyScript.d(ITEM_NOT_FOUND .. lazyScript.safeString(self.name or self.id))
 	end
 	return false
 end
@@ -616,11 +616,11 @@ end
 function lazyScript.EquipItem:GetItemSlot(sayNothing)
 	local bag = self.bag
 	local slot = self.slot
-	
+
 	if (self.slotCheckedSinceUpdate) then
 		return slot, bag
 	end
-	
+
 	-- Check if the slot is not nil or has changed
 	if slot then
 		if bag then
@@ -637,13 +637,13 @@ function lazyScript.EquipItem:GetItemSlot(sayNothing)
 			end
 		end
 	end
-	
+
 	-- Old values did not match. Clear the previous values
 	self.slot = nil
 	self.bag = nil
 	bag = nil
 	slot = nil
-	
+
 	-- Do a full inventory search
 	for bag = 4, 0, -1 do
 		for slot = 1, GetContainerNumSlots(bag) do
@@ -662,7 +662,7 @@ function lazyScript.EquipItem:GetItemSlot(sayNothing)
 			end
 		end
 	end
-	
+
 	self.slotCheckedSinceUpdate = true
 	return slot, bag
 end
@@ -674,12 +674,12 @@ function lazyScript.Item:New(code, name, id, equippedOnly, triggersGlobal)
 	local obj = {}
 	setmetatable(obj, { __index = self })
 	obj.code = code
-	obj.codePattern = "^"..code.."$"
+	obj.codePattern = "^" .. code .. "$"
 	obj.name = name
 	if triggersGlobal ~= nil then
 		obj.triggersGlobal = triggersGlobal
-		else
-		obj.triggersGlobal = true  -- I think
+	else
+		obj.triggersGlobal = true -- I think
 	end
 	obj.id = id
 	obj.equippedOnly = equippedOnly
@@ -688,15 +688,15 @@ function lazyScript.Item:New(code, name, id, equippedOnly, triggersGlobal)
 	obj.nowAndEveryTimer = 0
 	obj.bag = nil
 	obj.slot = nil
-	obj.slotCheckedSinceUpdate = nil       -- has the slot been checked since a BAG_UPDATE event?
+	obj.slotCheckedSinceUpdate = nil -- has the slot been checked since a BAG_UPDATE event?
 	return obj
 end
 
 function lazyScript.Item:Use()
 	local slot, bag = self:GetItemSlot()
-	
+
 	if not bag then
-		lazyScript.d(USING_ITEM..self.name.."("..lazyScript.safeString(self.id)..AT_EQUIPPED_SLOT..slot)
+		lazyScript.d(USING_ITEM .. self.name .. "(" .. lazyScript.safeString(self.id) .. AT_EQUIPPED_SLOT .. slot)
 		UseInventoryItem(slot)
 		if (SpellIsTargeting()) then
 			SpellTargetUnit("player")
@@ -704,10 +704,10 @@ function lazyScript.Item:Use()
 		lazyScript.recordAction(self.code)
 		self.everyTimer = GetTime()
 		self.nowAndEveryTimer = self.everyTimer
-		else
+	else
 		if (not self.equippedOnly) then
-			lazyScript.d(USING_ITEM..self.name.."("..lazyScript.safeString(self.id)..AT_BAG_SLOT..bag.."/"..slot)
-			UseContainerItem(bag,slot)
+			lazyScript.d(USING_ITEM .. self.name .. "(" .. lazyScript.safeString(self.id) .. AT_BAG_SLOT .. bag .. "/" .. slot)
+			UseContainerItem(bag, slot)
 			if (SpellIsTargeting()) then
 				SpellTargetUnit("player")
 			end
@@ -720,37 +720,37 @@ end
 
 function lazyScript.Item:IsUsable(sayNothing)
 	local slot, bag = self:GetItemSlot(sayNothing)
-	
+
 	if not slot then
 		if (not sayNothing) then
-			lazyScript.d(ITEM_NOT_FOUND..lazyScript.safeString(self.name or self.id))
+			lazyScript.d(ITEM_NOT_FOUND .. lazyScript.safeString(self.name or self.id))
 		end
 		return false
 	end
-	
+
 	if not bag then
 		if (GetInventoryItemCooldown("player", slot) == 0) then
 			return true
 		end
-		else
+	else
 		if (not self.equippedOnly) then
 			if (GetContainerItemCooldown(bag, slot) == 0) then
 				return true
 			end
 		end
 	end
-	
+
 	return false
 end
 
 function lazyScript.Item:GetItemSlot(sayNothing)
 	local bag = self.bag
 	local slot = self.slot
-	
+
 	if self.slotCheckedSinceUpdate then
 		return slot, bag
 	end
-	
+
 	-- Check if the slot is not nil or has changed
 	if slot then
 		-- Check equipped items first
@@ -766,7 +766,7 @@ function lazyScript.Item:GetItemSlot(sayNothing)
 					end
 				end
 			end
-			elseif bag then
+		elseif bag then
 			if not self.equippedOnly then
 				local link = GetContainerItemLink(bag, slot)
 				if (link) then
@@ -782,13 +782,13 @@ function lazyScript.Item:GetItemSlot(sayNothing)
 			end
 		end
 	end
-	
+
 	-- Old values did not match. Clear the previous values
 	self.slot = nil
 	self.bag = nil
 	bag = nil
 	slot = nil
-	
+
 	-- Do a full inventory/equipment search
 	-- Check equipped items first
 	for slot = 0, 19 do
@@ -806,7 +806,7 @@ function lazyScript.Item:GetItemSlot(sayNothing)
 			end
 		end
 	end
-	
+
 	if not self.equippedOnly then
 		for bag = 4, 0, -1 do
 			for slot = 1, GetContainerNumSlots(bag) do
@@ -826,33 +826,33 @@ function lazyScript.Item:GetItemSlot(sayNothing)
 			end
 		end
 	end
-	
+
 	self.slotCheckedSinceUpdate = true
 	return slot, bag
 end
 
 -- Apply Weapon Buff Objects
-lazyScript.ApplyWeaponBuff ={}
+lazyScript.ApplyWeaponBuff = {}
 
 function lazyScript.ApplyWeaponBuff:New(code, weaponBuffName, equipSlot)
-	local obj ={}
+	local obj = {}
 	setmetatable(obj, { __index = self })
 	obj.code = code
-	obj.codePattern = "^"..code.."$"
+	obj.codePattern = "^" .. code .. "$"
 	obj.name = weaponBuffName
 	obj.weaponBuffName = weaponBuffName
 	obj.triggersGlobal = true
 	obj.bag = nil
 	obj.slot = nil
-	obj.slotCheckedSinceUpdate = nil       -- has the slot been checked since a BAG_UPDATE event?
-	
+	obj.slotCheckedSinceUpdate = nil -- has the slot been checked since a BAG_UPDATE event?
+
 	if equipSlot == "OffHand" then
 		equipSlot = "SecondaryHandSlot"
-		else
+	else
 		equipSlot = "MainHandSlot"
 	end
 	obj.equipSlot = equipSlot
-	
+
 	obj.everyTimer = 0
 	obj.nowAndEveryTimer = 0
 	return obj
@@ -864,15 +864,15 @@ function lazyScript.ApplyWeaponBuff:Use()
 		lazyScript.d(WEAPON_BUFF_BAG_SLOT_NOT_FOUND)
 		return
 	end
-	
+
 	UseContainerItem(self.bag, self.slot)
 	PickupInventoryItem(GetInventorySlotInfo(self.equipSlot))
-	
+
 	-- If the use poison failed we will now have the weapon on our cursor, put it back
 	if (CursorHasItem()) then
 		PickupInventoryItem(GetInventorySlotInfo(self.equipSlot))
 	end
-	
+
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
 end
@@ -880,7 +880,7 @@ end
 function lazyScript.ApplyWeaponBuff:IsUsable(sayNothing)
 	local slot = self.slot
 	local bag = self.bag
-	
+
 	if not self.slotCheckedSinceUpdate then
 		if not lazyScript.IsItemStillHere(self.name, slot, bag, sayNothing) then
 			slot, bag = lazyScript.SearchBags(self.name, sayNothing)
@@ -889,20 +889,20 @@ function lazyScript.ApplyWeaponBuff:IsUsable(sayNothing)
 		end
 		self.slotCheckedSinceUpdate = true
 	end
-	
+
 	if not (slot and bag) then
 		return false
 	end
-	
+
 	local slotId = GetInventorySlotInfo(self.equipSlot)
 	local link = GetInventoryItemLink("player", slotId)
 	if not (link) then
 		return false
 	end
-	
+
 	local id, name = lazyScript.IdAndNameFromLink(link)
 	local _, _, _, _, itemType = GetItemInfo(id)
-	
+
 	if itemType ~= "Weapon" then
 		if not sayNothing then
 			lazyScript.d(APPLYWEAPONBUFF ..
@@ -918,43 +918,43 @@ function lazyScript.IsItemStillHere(idOrName, slot, bag, sayNothing)
 	if (not slot) or (not bag) then
 		return false
 	end
-	
+
 	local itemId, itemName
-	
+
 	lazyScript.re(idOrName, "^(%d+)$")
-	
+
 	if not lazyScript.re(idOrName, "^%d+$") then
 		itemName = idOrName
-		else
+	else
 		itemId = tonumber(idOrName)
 	end
-	
+
 	local link = GetContainerItemLink(bag, slot)
 	if (link) then
 		local id, name = lazyScript.IdAndNameFromLink(link)
 		if (id) then
 			-- itemId might be nil, in which case match by name
 			if ((itemId and id == itemId) or (itemName and (string.lower(name) == string.lower(itemName)))) then
-				lazyScript.d(ISITEMSTILLHERE_NOT_FOUND..(itemName or tostring(itemId))..AT_BAG_SLOT_1..bag.."/"..slot)
+				lazyScript.d(ISITEMSTILLHERE_NOT_FOUND .. (itemName or tostring(itemId)) .. AT_BAG_SLOT_1 .. bag .. "/" .. slot)
 				return true
 			end
 		end
 	end
-	
+
 	return false
 end
 
 function lazyScript.SearchBags(idOrName, sayNothing)
 	local slot, bag
 	local itemId, itemName
-	
+
 	if not lazyScript.re(idOrName, "^%d+$") then
 		itemName = idOrName
-		else
+	else
 		itemId = tonumber(idOrName)
 	end
-	
-	
+
+
 	for bag = 4, 0, -1 do
 		for slot = 1, GetContainerNumSlots(bag) do
 			local link = GetContainerItemLink(bag, slot)
@@ -963,14 +963,14 @@ function lazyScript.SearchBags(idOrName, sayNothing)
 				if (id) then
 					-- itemId might be nil, in which case match by name
 					if ((itemId and id == itemId) or (itemName and (string.lower(name) == string.lower(itemName)))) then
-						lazyScript.d(SEARCHBAGS_FOUND..(itemName or tostring(itemId))..AT_BAG_SLOT_1..bag.."/"..slot)
+						lazyScript.d(SEARCHBAGS_FOUND .. (itemName or tostring(itemId)) .. AT_BAG_SLOT_1 .. bag .. "/" .. slot)
 						return slot, bag
 					end
 				end
 			end
 		end
 	end
-	
+
 	return slot, bag
 end
 
@@ -981,11 +981,11 @@ function lazyScript.PseudoAction:New(code, name, triggersGlobal)
 	local obj = {}
 	setmetatable(obj, { __index = self })
 	obj.code = code
-	obj.codePattern = "^"..code.."$"
+	obj.codePattern = "^" .. code .. "$"
 	obj.name = name
 	if (triggersGlobal ~= nil) then
 		obj.triggersGlobal = triggersGlobal
-		else
+	else
 		obj.triggersGlobal = true
 	end
 	obj.requiresSpellStopCasting = false
@@ -1003,8 +1003,8 @@ lazyScript.pseudoActions = {}
 
 lazyScript.pseudoActions.assist = lazyScript.PseudoAction:New("assist", "Assist", false)
 function lazyScript.pseudoActions.assist:Use()
-	local assistTarget = lazyScript.assistUnitId.."target"
-	lazyScript.d(ASSISTING..lazyScript.assistName.." -> "..UnitName(assistTarget))
+	local assistTarget = lazyScript.assistUnitId .. "target"
+	lazyScript.d(ASSISTING .. lazyScript.assistName .. " -> " .. UnitName(assistTarget))
 	TargetUnit(assistTarget)
 	lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
@@ -1019,53 +1019,54 @@ function lazyScript.pseudoActions.assist:IsUsable(sayNothing)
 		end
 		return false
 	end
-	
+
 	-- If we haven't determined the assist's party/raid unitId yet or if the
 	-- player for the unitId is not our assist, scan the party/raid to find
 	-- the assist's unitId.
-	if ( lazyScript.assistUnitId == nil or
+	if (
+		lazyScript.assistUnitId == nil or
 			string.lower(UnitName(lazyScript.assistUnitId) or "") ~= string.lower(lazyScript.assistName)) then
 		lazyScript.assistUnitId = lazyScript.findPlayerUnitId(lazyScript.assistName)
 		if (lazyScript.assistUnitId == nil) then
 			if (not sayNothing) then
-				lazyScript.p(CANNOT_FIND..lazyScript.assistName..IN_GROUP_OR_RAID_TO_ASSIST)
+				lazyScript.p(CANNOT_FIND .. lazyScript.assistName .. IN_GROUP_OR_RAID_TO_ASSIST)
 			end
 			return false
 		end
 	end
-	
+
 	-- If the assist is dead, complain
 	if (UnitIsDead(lazyScript.assistUnitId)) then
 		if (not sayNothing) then
-			lazyScript.p(lazyScript.assistName..CANNOT_ASSIST_DEAD)
+			lazyScript.p(lazyScript.assistName .. CANNOT_ASSIST_DEAD)
 		end
 		return false
 	end
-	
+
 	-- If the assist is not within range, complain.
 	if (not UnitIsVisible(lazyScript.assistUnitId)) then
 		if (not sayNothing) then
-			lazyScript.p(lazyScript.assistName..CANNOT_ASSIST_RANGE)
+			lazyScript.p(lazyScript.assistName .. CANNOT_ASSIST_RANGE)
 		end
 		return false
 	end
-	
-	local assistTarget = lazyScript.assistUnitId.."target"
-	
+
+	local assistTarget = lazyScript.assistUnitId .. "target"
+
 	-- If the assist's target is dead, just pass through.
 	if (UnitIsDead(assistTarget)) then
 		if (not sayNothing) then
-			lazyScript.d(lazyScript.assistName..TARGET_IS_DEAD_SKIP)
+			lazyScript.d(lazyScript.assistName .. TARGET_IS_DEAD_SKIP)
 		end
 		return false
 	end
-	
+
 	-- If the assist's target exists and is not the same unit as the player's current target,
 	-- target the assist's target.
 	if (UnitExists(assistTarget) and not UnitIsUnit("target", assistTarget)) then
 		return true
 	end
-	
+
 	return false
 end
 
@@ -1081,11 +1082,11 @@ function lazyScript.pseudoActions.assistPet:IsUsable(sayNothing)
 	-- Do not use UnitAffectingCombat because this could return true even if pet is not attacking
 	-- so long as it has entered combat at some stage.
 	if UnitExists("pettarget") then
-		if not UnitIsUnit("pettarget","target") then
+		if not UnitIsUnit("pettarget", "target") then
 			return true
 		end
 	end
-	
+
 	return false
 end
 
@@ -1165,21 +1166,21 @@ function lazyScript.pseudoActions.stopAll:Use()
 		lazyScript.d(STOPPING_AUTO_ATTACK)
 		lazyScript.StopAutoAttack()
 	end
-	
+
 	if lazyScript.ClassCanAutoWand() then
 		if lazyScript.IsAutoWanding() then
 			lazyScript.d(STOPPING_AUTO_SHOOT)
 			lazyScript.StopWanding()
 		end
 	end
-	
+
 	if lazyScript.ClassCanAutoShot() then
 		if lazyScript.IsAutoShooting() then
 			lazyScript.d(STOPPING_AUTO_SHOT)
 			lazyScript.StopAutoShot()
 		end
 	end
-	
+
 	--lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
@@ -1303,7 +1304,7 @@ function lazyScript.pseudoActions.autoShot:IsUsable(sayNothing)
 	if (IsActionInRange(lazyScript.autoShotSlot) == 0) then
 		return false
 	end
-	
+
 	return (not lazyScript.IsAutoShooting(sayNothing))
 end
 
@@ -1363,19 +1364,19 @@ end
 
 function lazyScript.findPlayerUnitId(name)
 	if (lazyScript.masks.PlayerInRaid()) then
-		for i=1,40 do
-			if (string.lower(UnitName("raid"..i) or "") == string.lower(name)) then
-				return "raid"..i
+		for i = 1, 40 do
+			if (string.lower(UnitName("raid" .. i) or "") == string.lower(name)) then
+				return "raid" .. i
 			end
 		end
-		elseif (lazyScript.masks.PlayerInGroup()) then
-		for i=1,4 do
-			if (string.lower(UnitName("party"..i) or "") == string.lower(name)) then
-				return "party"..i
+	elseif (lazyScript.masks.PlayerInGroup()) then
+		for i = 1, 4 do
+			if (string.lower(UnitName("party" .. i) or "") == string.lower(name)) then
+				return "party" .. i
 			end
 		end
 	end
-	
+
 	return nil
 end
 
@@ -1384,16 +1385,16 @@ function lazyScript.ShapeshiftForm:New(code, texture, triggersGlobal)
 	local obj = {}
 	setmetatable(obj, { __index = self })
 	obj.code = code
-	obj.codePattern = "^"..code.."$"
-	obj.texture = texture                  -- name of the icon used for the action
+	obj.codePattern = "^" .. code .. "$"
+	obj.texture = texture -- name of the icon used for the action
 	if obj.texture then
-		obj.texture = LS_TEXTURE_PREFIX..obj.texture
+		obj.texture = LS_TEXTURE_PREFIX .. obj.texture
 	end
 	-- Full name used for tooltip matching. English is ok if we can't find a match.
-	obj.name = lazyScript.getLocaleString("ACTION_TTS."..code, true)
+	obj.name = lazyScript.getLocaleString("ACTION_TTS." .. code, true)
 	if (triggersGlobal ~= nil) then
 		obj.triggersGlobal = triggersGlobal
-		else
+	else
 		obj.triggersGlobal = true
 	end
 	obj.requiresSpellStopCasting = true
@@ -1410,7 +1411,7 @@ function lazyScript.ShapeshiftForm:Use()
 		lazyScript.recordAction(self.code)
 		self.everyTimer = GetTime()
 		self.nowAndEveryTimer = self.everyTimer
-		else
+	else
 		-- We're in the wrong form and need to be human first
 		local activeIndex = lazyScript.FindActiveShapeshift()
 		if (activeIndex ~= nil) then
@@ -1430,7 +1431,7 @@ function lazyScript.ShapeshiftForm:IsUsable(sayNothing)
 		end
 		if (castable == 1) then
 			return true
-			else
+		else
 			-- We're in the wrong form and need to be human first
 			local activeIndex = lazyScript.FindActiveShapeshift(doNothing)
 			if (activeIndex ~= nil) then
@@ -1445,22 +1446,22 @@ function lazyScript.ShapeshiftForm:FindShapeshift(sayNothing)
 	if (self.shapeshiftIndex ~= nil) then
 		return true
 	end
-	
+
 	local numForms = GetNumShapeshiftForms()
-	
+
 	if numForms < 1 then
 		if (not sayNothing) then
 			lazyScript.p(NO_SHAPESHIFT_FORMS_AVAILABLE)
 		end
 		return false
 	end
-	
+
 	for formIdx = 1, numForms do
 		local icon, name, active, castable = GetShapeshiftFormInfo(formIdx)
 		if ((icon == self.texture)) then
 			self.shapeshiftIndex = formIdx
 			return true
-			elseif active then
+		elseif active then
 			-- if this form is active but we couldn't match the texture, look for a buff with the same texture
 			local buffObj = lazyScript.buffTable[self.code]
 			if buffObj ~= nil then
@@ -1473,16 +1474,16 @@ function lazyScript.ShapeshiftForm:FindShapeshift(sayNothing)
 			end
 		end
 	end
-	
+
 	if (not sayNothing) then
-		lazyScript.p(SHAPESHIFT_FORM..self.code..NOT_FOUND)
+		lazyScript.p(SHAPESHIFT_FORM .. self.code .. NOT_FOUND)
 	end
 	return false
 end
 
 function lazyScript.FindActiveShapeshift()
 	local numForms = GetNumShapeshiftForms()
-	
+
 	for formIdx = 1, numForms do
 		local icon, name, active, castable = GetShapeshiftFormInfo(formIdx)
 		if (active == 1) then
@@ -1497,7 +1498,7 @@ function lazyScript.SayAction:New(code, channel, message)
 	setmetatable(obj, { __index = self })
 	obj.name = "say"
 	obj.code = code
-	obj.codePattern = "^"..code.."$"
+	obj.codePattern = "^" .. code .. "$"
 	obj.channel = channel
 	obj.message = message
 	obj.triggerGlobal = false
@@ -1522,7 +1523,7 @@ function lazyScript.EchoAction:New(code, message)
 	setmetatable(obj, { __index = self })
 	obj.name = "echo"
 	obj.code = code
-	obj.codePattern = "^"..code.."$"
+	obj.codePattern = "^" .. code .. "$"
 	obj.message = message
 	obj.triggerGlobal = false
 	obj.requiresSpellStopCasting = false
@@ -1544,7 +1545,7 @@ lazyScript.MinionMessageAction = {}
 function lazyScript.MinionMessageAction:New(message)
 	local obj = {}
 	setmetatable(obj, { __index = self })
-	obj.code = "minion="..message
+	obj.code = "minion=" .. message
 	obj.name = message
 	obj.minionOverride = true
 	obj.triggerGlobal = false
@@ -1567,9 +1568,9 @@ lazyScript.WhisperAction = {}
 function lazyScript.WhisperAction:New(code, recipient, message)
 	local obj = {}
 	setmetatable(obj, { __index = self })
-	obj.name = "Whisper to: "..recipient
+	obj.name = "Whisper to: " .. recipient
 	obj.code = code
-	obj.codePattern = "^"..code.."$"
+	obj.codePattern = "^" .. code .. "$"
 	obj.recipient = string.lower(lazyScript.safeString(recipient))
 	obj.message = message
 	obj.triggerGlobal = false
@@ -1582,14 +1583,14 @@ end
 function lazyScript.WhisperAction:Use()
 	local whisperTarget = self.recipient
 	local unitID = lazyScript.validateUnitId(whisperTarget)
-	if  unitID then
+	if unitID then
 		if UnitExists(unitID) then
 			whisperTarget = UnitName(unitID)
-			else
+		else
 			return
 		end
 	end
-	
+
 	if whisperTarget then
 		SendChatMessage(self.message, "Whisper", nil, whisperTarget)
 	end
@@ -1603,9 +1604,9 @@ lazyScript.EmoteAction = {}
 function lazyScript.EmoteAction:New(code, emoteToken)
 	local obj = {}
 	setmetatable(obj, { __index = self })
-	obj.name = "Do emote: "..emoteToken
+	obj.name = "Do emote: " .. emoteToken
 	obj.code = code
-	obj.codePattern = "^"..code.."$"
+	obj.codePattern = "^" .. code .. "$"
 	obj.emoteToken = emoteToken
 	obj.triggerGlobal = false
 	obj.requiresSpellStopCasting = false
@@ -1628,9 +1629,9 @@ lazyScript.PlaySoundAction = {}
 function lazyScript.PlaySoundAction:New(code, playSoundToken)
 	local obj = {}
 	setmetatable(obj, { __index = self })
-	obj.name = "Play Sound: "..playSoundToken
+	obj.name = "Play Sound: " .. playSoundToken
 	obj.code = code
-	obj.codePattern = "^"..code.."$"
+	obj.codePattern = "^" .. code .. "$"
 	obj.playSoundToken = playSoundToken
 	obj.triggerGlobal = false
 	obj.requiresSpellStopCasting = false
@@ -1654,38 +1655,38 @@ function lazyScript.PetAction:New(code, texture, interrupts, triggersGlobal, pro
 	local obj = {}
 	setmetatable(obj, { __index = self })
 	obj.name = code
-	obj.code = code                        -- short name reported in History
-	obj.codePattern = "^"..code.."$"       -- used for looking up actions from the table
-	obj.texture = texture                  -- name of the icon used for the action
+	obj.code = code -- short name reported in History
+	obj.codePattern = "^" .. code .. "$" -- used for looking up actions from the table
+	obj.texture = texture -- name of the icon used for the action
 	--if obj.texture then
 	--   obj.texture = LS_TEXTURE_PREFIX..obj.texture
 	--end
-	obj.slot = nil                         -- the action slot # on the action bar
-	obj.everyTimer = 0                     -- initialize timer for -everyXXs mask
+	obj.slot = nil -- the action slot # on the action bar
+	obj.everyTimer = 0 -- initialize timer for -everyXXs mask
 	obj.nowAndEveryTimer = 0
-	
-	local localeName = lazyScript.getLocaleString("ACTION_TTS."..code, true)
+
+	local localeName = lazyScript.getLocaleString("ACTION_TTS." .. code, true)
 	if (localeName ~= nil) then
-		obj.name = lazyScript.getLocaleString("ACTION_TTS."..code, true)
-		else
+		obj.name = lazyScript.getLocaleString("ACTION_TTS." .. code, true)
+	else
 		obj.name = nil
 	end
-	
-	
+
+
 	obj.interrupts = interrupts
-	
-	if (triggersGlobal ~= nil) then  -- does it trigger the global cooldown
+
+	if (triggersGlobal ~= nil) then -- does it trigger the global cooldown
 		obj.triggersGlobal = triggersGlobal
-		else
+	else
 		obj.triggersGlobal = false
 	end
-	
+
 	if (problemTexture ~= nil) then
 		obj.problemTexture = problemTexture
-		else
+	else
 		obj.problemTexture = false
 	end
-	
+
 	obj.requiresSpellStopCasting = false
 	return obj
 end
@@ -1694,7 +1695,7 @@ function lazyScript.PetAction:GetSlot(sayNothing)
 	if (not PetHasActionBar()) then
 		return nil
 	end
-	
+
 	if (not self.slot) then
 		for slot = 1, NUM_PET_ACTION_SLOTS do
 			local name, _, thisTexture = GetPetActionInfo(slot)
@@ -1704,14 +1705,14 @@ function lazyScript.PetAction:GetSlot(sayNothing)
 						if (not self.name) then
 							self.name = name
 						end
-						lazyScript.d(FOUND_PET_ACTION..self.name..AT_SLOT..slot..".")
+						lazyScript.d(FOUND_PET_ACTION .. self.name .. AT_SLOT .. slot .. ".")
 						self.slot = slot
 						break
 					end
-					else
+				else
 					if (name == self.code) then
 						self.name = name
-						lazyScript.d(FOUND_PET_ACTION..self.name..AT_SLOT..slot..".")
+						lazyScript.d(FOUND_PET_ACTION .. self.name .. AT_SLOT .. slot .. ".")
 						self.slot = slot
 						break
 					end
@@ -1719,21 +1720,21 @@ function lazyScript.PetAction:GetSlot(sayNothing)
 			end
 		end
 	end
-	
+
 	if (not self.slot) then
 		if (not sayNothing) then
-			lazyScript.p(COULDNT_FIND..self.code..ADD_IT_PET)
+			lazyScript.p(COULDNT_FIND .. self.code .. ADD_IT_PET)
 		end
 		return nil
 	end
-	
+
 	return self.slot
 end
 
 function lazyScript.PetAction:Use()
-	lazyScript.d(PET_ACTION..lazyScript.safeString(self.name))
+	lazyScript.d(PET_ACTION .. lazyScript.safeString(self.name))
 	CastPetAction(self.slot)
-	
+
 	lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
@@ -1746,7 +1747,7 @@ function lazyScript.PetAction:IsUsable(sayNothing)
 		end
 		return false
 	end
-	
+
 	if (self:GetSlot(sayNothing)) then
 		if (GetPetActionsUsable(self.slot) == 1 and GetPetActionCooldown(self.slot) == 0) then
 			if (not self:IsActive(sayNothing)) then
@@ -1764,7 +1765,7 @@ function lazyScript.PetAction:IsActive(sayNothing)
 		end
 		return false
 	end
-	
+
 	if (self:GetSlot(sayNothing)) then
 		local _, _, _, _, isActive = GetPetActionInfo(self.slot)
 		return isActive
@@ -1775,7 +1776,7 @@ end
 lazyScript.pseudoActions.petAttack = lazyScript.PseudoAction:New("petAttack", "Pet Attack", false)
 function lazyScript.pseudoActions.petAttack:Use()
 	PetAttack()
-	
+
 	lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
@@ -1788,18 +1789,18 @@ function lazyScript.pseudoActions.petAttack:IsUsable(sayNothing)
 		end
 		return false
 	end
-	
-	if UnitExists("pettarget") and UnitIsUnit("pettarget","target") then
+
+	if UnitExists("pettarget") and UnitIsUnit("pettarget", "target") then
 		return false
 	end
-	
+
 	return true
 end
 
 lazyScript.pseudoActions.petStop = lazyScript.PseudoAction:New("petStop", "Pet Stop", false)
 function lazyScript.pseudoActions.petStop:Use()
 	PetFollow()
-	
+
 	lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
@@ -1812,7 +1813,7 @@ function lazyScript.pseudoActions.petStop:IsUsable(sayNothing)
 		end
 		return false
 	end
-	
+
 	return (UnitExists("pettarget"))
 end
 
@@ -1821,21 +1822,21 @@ lazyScript.CancelBuffAction = {}
 function lazyScript.CancelBuffAction:New(code, name, texture)
 	local obj = {}
 	setmetatable(obj, { __index = self })
-	obj.code = code                  -- short name reported in History
-	obj.name = "Cancel "..name       -- action name
-	obj.buffName = name              -- full buff name
-	obj.texture = texture            -- name of the icon used for the action
-	obj.everyTimer = 0               -- initialize timer for -everyXXs mask
+	obj.code = code -- short name reported in History
+	obj.name = "Cancel " .. name -- action name
+	obj.buffName = name -- full buff name
+	obj.texture = texture -- name of the icon used for the action
+	obj.everyTimer = 0 -- initialize timer for -everyXXs mask
 	obj.nowAndEveryTimer = 0
-	obj.triggersGlobal = false       -- does not trigger global cooldown
+	obj.triggersGlobal = false -- does not trigger global cooldown
 	obj.requiresSpellStopCasting = false
-	
+
 	return obj
 end
 
 function lazyScript.CancelBuffAction:Use()
 	CancelPlayerBuff(self.buffIndex)
-	
+
 	lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
@@ -1856,13 +1857,13 @@ function lazyScript.CancelBuffAction:FindPlayerBuff(sayNothing)
 		local texture = GetPlayerBuffTexture(buffIndex)
 		if self.texture == nil or (self.texture ~= nil and (texture == self.texture)) then
 			local tooltipText = lazyScript.Tooltip:GetPlayerBuffTextLeftN(buffIndex, 1)
-			if string.find(tooltipText, "^"..self.buffName) then
+			if string.find(tooltipText, "^" .. self.buffName) then
 				return buffIndex
 			end
 		end
 		i = i + 1
 	end
-	
+
 	return nil
 end
 
@@ -1871,14 +1872,14 @@ lazyScript.CallFormAction = {}
 function lazyScript.CallFormAction:New(form)
 	local obj = {}
 	setmetatable(obj, { __index = self })
-	obj.code = "callForm="..form     -- short name reported in History
-	obj.name = "Call Form "..form    -- action name
-	obj.everyTimer = 0               -- initialize timer for -everyXXs mask
+	obj.code = "callForm=" .. form -- short name reported in History
+	obj.name = "Call Form " .. form -- action name
+	obj.everyTimer = 0 -- initialize timer for -everyXXs mask
 	obj.nowAndEveryTimer = 0
-	obj.triggersGlobal = false       -- does not trigger global cooldown
+	obj.triggersGlobal = false -- does not trigger global cooldown
 	obj.requiresSpellStopCasting = false
 	obj.form = form
-	
+
 	return obj
 end
 
@@ -1886,7 +1887,7 @@ function lazyScript.CallFormAction:GetSubstituteActions(sayNothing)
 	local actions = lazyScript.FindParsedForm(self.form, sayNothing)
 	if not actions then
 		if not sayNothing then
-			lazyScript.p(COULD_NOT_CALL_FORM..self.form..".")
+			lazyScript.p(COULD_NOT_CALL_FORM .. self.form .. ".")
 		end
 		return nil
 	end
@@ -1904,20 +1905,20 @@ lazyScript.TargetUnitAction = {}
 function lazyScript.TargetUnitAction:New(unitId)
 	local obj = {}
 	setmetatable(obj, { __index = self })
-	obj.code = "targetUnit="..unitId -- short name reported in History
-	obj.name = "Target "..unitId     -- action name
+	obj.code = "targetUnit=" .. unitId -- short name reported in History
+	obj.name = "Target " .. unitId -- action name
 	obj.unitId = unitId
-	obj.everyTimer = 0               -- initialize timer for -everyXXs mask
+	obj.everyTimer = 0 -- initialize timer for -everyXXs mask
 	obj.nowAndEveryTimer = 0
-	obj.triggersGlobal = false       -- does not trigger global cooldown
+	obj.triggersGlobal = false -- does not trigger global cooldown
 	obj.requiresSpellStopCasting = false
-	
+
 	return obj
 end
 
 function lazyScript.TargetUnitAction:Use()
 	TargetUnit(self.unitId)
-	
+
 	lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
@@ -1932,20 +1933,20 @@ lazyScript.SpellTargetUnitAction = {}
 function lazyScript.SpellTargetUnitAction:New(unitId)
 	local obj = {}
 	setmetatable(obj, { __index = self })
-	obj.code = "spellTargetUnit="..unitId -- short name reported in History
-	obj.name = "Spell Target "..unitId    -- action name
+	obj.code = "spellTargetUnit=" .. unitId -- short name reported in History
+	obj.name = "Spell Target " .. unitId -- action name
 	obj.unitId = unitId
-	obj.everyTimer = 0               -- initialize timer for -everyXXs mask
+	obj.everyTimer = 0 -- initialize timer for -everyXXs mask
 	obj.nowAndEveryTimer = 0
-	obj.triggersGlobal = false       -- does not trigger global cooldown
+	obj.triggersGlobal = false -- does not trigger global cooldown
 	obj.requiresSpellStopCasting = false
-	
+
 	return obj
 end
 
 function lazyScript.SpellTargetUnitAction:Use()
 	SpellTargetUnit(self.unitId)
-	
+
 	lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
@@ -1960,20 +1961,20 @@ lazyScript.TargetByNameAction = {}
 function lazyScript.TargetByNameAction:New(targetName)
 	local obj = {}
 	setmetatable(obj, { __index = self })
-	obj.code = "targetByName="..targetName -- short name reported in History
-	obj.name = "Target "..targetName     -- action name
+	obj.code = "targetByName=" .. targetName -- short name reported in History
+	obj.name = "Target " .. targetName -- action name
 	obj.targetName = targetName
-	obj.everyTimer = 0               -- initialize timer for -everyXXs mask
+	obj.everyTimer = 0 -- initialize timer for -everyXXs mask
 	obj.nowAndEveryTimer = 0
-	obj.triggersGlobal = false       -- does not trigger global cooldown
+	obj.triggersGlobal = false -- does not trigger global cooldown
 	obj.requiresSpellStopCasting = false
-	
+
 	return obj
 end
 
 function lazyScript.TargetByNameAction:Use()
 	TargetByName(self.targetName, true) -- exact match
-	
+
 	lazyScript.recordAction(self.code)
 	self.everyTimer = GetTime()
 	self.nowAndEveryTimer = self.everyTimer
@@ -1988,9 +1989,9 @@ function lazyScript.Try(actions, masks, doNothing)
 	if (table.getn(actions) == 0) then
 		return false
 	end
-	
+
 	local sayNothing = doNothing
-	
+
 	if (masks) then
 		for _, mask in ipairs(masks) do
 			if (not mask(sayNothing)) then
@@ -1998,7 +1999,7 @@ function lazyScript.Try(actions, masks, doNothing)
 			end
 		end
 	end
-	
+
 	-- Test if all actions are usable. Also perform action substitution at the same time.
 	local temp = {}
 	for _, actionObj in ipairs(actions) do
@@ -2011,7 +2012,7 @@ function lazyScript.Try(actions, masks, doNothing)
 			for _, subAction in ipairs(subActions) do
 				table.insert(temp, subAction)
 			end
-			else
+		else
 			if (not actionObj:IsUsable(sayNothing)) then
 				return nil
 			end
@@ -2019,64 +2020,64 @@ function lazyScript.Try(actions, masks, doNothing)
 		end
 	end
 	actions = temp
-	
+
 	-- Execute the actions in order and remember the action that triggers the global cooldown
 	local triggerAction = nil
 	for idx, actionObj in ipairs(actions) do
 		if not sayNothing then
-			lazyScript.d(TRY_ACTION..idx..": "..actionObj.code)
+			lazyScript.d(TRY_ACTION .. idx .. ": " .. actionObj.code)
 		end
-		
+
 		if not doNothing then
 			-- If we're executing more than one action and both the current and the previously executed
 			-- action require SpellStopCasting() before another action can be executed, do so unless
 			-- we're already casting a spell or channelling a spell from before LazyScript was called.
-			if (idx > 1 and actions[idx-1].requiresSpellStopCasting and actionObj.requiresSpellStopCasting and
-			not (lazyScript.spellcastInProgress or lazyScript.channellingInProgress)) then
-            SpellStopCasting()
+			if (idx > 1 and actions[idx - 1].requiresSpellStopCasting and actionObj.requiresSpellStopCasting and
+				not (lazyScript.spellcastInProgress or lazyScript.channellingInProgress)) then
+				SpellStopCasting()
 			end
-			
+
 			actionObj:Use()
 		end
-		
+
 		if (actionObj.triggersGlobal) then
 			triggerAction = actionObj
 		end
 	end
-	
+
 	-- Arbitrarily choose the first action if no actions trigger the cooldown
 	if (triggerAction == nil) then
 		triggerAction = actions[1]
 	end
-	
+
 	return triggerAction, actions
 end
 
 function lazyScript.TryActions(actionLines, doNothing)
-	
+
 	if (not doNothing) then
 		if (not UnitExists("target") and lazyScript.perPlayerConf.autoTarget) then
 			TargetNearestEnemy()
 		end
 	end
-	
+
 	local triggerAction, actions = lazyScript.TryActionsOnly(actionLines, doNothing)
 	if triggerAction then
 		return triggerAction, actions
 	end
-	
+
 	local sayNothing = doNothing
 	if (not doNothing and lazyScript.perPlayerConf.initiateAutoAttack) then
-		
+
 		if not lazyScript.ClassCanAutoWand() or not lazyScript.IsAutoWanding(sayNothing) then
 			if (lazyScript.CustomAutoAttackMode ~= nil) then
 				lazyScript.CustomAutoAttackMode()
-				else
+			else
 				lazyScript.StartAutoAttack()
 			end
 		end
 	end
-	
+
 	return nil
 end
 
