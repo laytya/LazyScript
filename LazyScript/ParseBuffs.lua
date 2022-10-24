@@ -198,6 +198,8 @@ function lazyScript.loadBuffTable()
 		frostWard            = lazyScript.Buff:New("frostWard",           "Spell_Frost_FrostWard"                           ),
 		frostArmor           = lazyScript.Buff:New("frostArmor",          "Spell_Frost_FrostArmor02"                        ),
 		frostbolt            = lazyScript.Buff:New("frostbolt",           "Spell_Frost_FrostBolt02",          "slow"        ),
+		frostNova            = lazyScript.Buff:New("frostNova",           "Spell_Frost_FrostNova",          "immobile"    ),
+		frostbite            = lazyScript.Buff:New("frostbite",           "Spell_Frost_FrostArmor",          "immobile"    ),
 		iceArmor             = lazyScript.Buff:New("iceArmor",            "Spell_Frost_FrostArmor02"                        ),
 		iceBarrier           = lazyScript.Buff:New("iceBarrier",          "Spell_Ice_Lament"                                ),
 		iceBlock             = lazyScript.Buff:New("iceBlock",            "Spell_Frost_Frost"                               ),
