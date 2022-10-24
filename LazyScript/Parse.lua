@@ -4,7 +4,7 @@ function lazyScript.negWrapper(maskFunc, negate)
 	if not negate then
 		return maskFunc
 	end
-	
+
 	return function(sayNothing)
 		local maskResult = maskFunc(sayNothing)
 		return ((maskResult and not negate) or (not maskResult and negate))
@@ -17,7 +17,7 @@ function lazyScript.orWrapper(masks, negate)
 	if table.getn(masks) == 1 then
 		return lazyScript.negWrapper(masks[1], negate)
 	end
-	
+
 	return function(sayNothing)
 		if (not negate) then
 			for idx, mask in ipairs(masks) do
@@ -26,7 +26,7 @@ function lazyScript.orWrapper(masks, negate)
 				end
 			end
 			return false
-			else
+		else
 			for idx, mask in ipairs(masks) do
 				if (mask(sayNothing)) then
 					return false
@@ -54,25 +54,25 @@ end
 
 function lazyScript.ParseLine(line)
 	local bits = lazyScript.split(line, "%-")
-	
+
 	local actions = {}
 	local masks = {}
-	
+
 	for idx, bit in ipairs(bits) do
-		bit = string.gsub(bit, "\\%-", "-")  -- unescape escaped '-'s
-		
+		bit = string.gsub(bit, "\\%-", "-") -- unescape escaped '-'s
+
 		local target = ""
 		if (lazyScript.rebit(bit, "(.*)@([%a%d]+)")) then
 			bit = lazyScript.match1
 			target = lazyScript.match2
 		end
-		
+
 		local rank
 		if (lazyScript.rebit(bit, "(.*)%(rank(%d+)%)")) then
 			bit = lazyScript.match1
 			rank = tonumber(lazyScript.match2)
 		end
-		
+
 		local smart
 		if (lazyScript.rebit(bit, "(.*)%(smart%)")) then
 			bit = lazyScript.match1
@@ -86,13 +86,13 @@ function lazyScript.ParseLine(line)
 				-- success
 				foundBit = true
 				break
-				elseif (bitResult == nil) then
+			elseif (bitResult == nil) then
 				-- syntax error
-				lazyScript.p(SYNTAX_ERROR_FOUND_IN..bit)
+				lazyScript.p(SYNTAX_ERROR_FOUND_IN .. bit)
 				return nil
 			end
 		end
-		
+
 		-- Did not find a bitParser, is it an action?
 		if (not foundBit) then
 			relaxedBit = lazyScript.relax(bit)
@@ -104,85 +104,85 @@ function lazyScript.ParseLine(line)
 				end
 			end
 		end
-		
+
 		if (not foundBit) then
-			lazyScript.p(SYNTAX_ERROR_CANNOT_PARSE..bit)
+			lazyScript.p(SYNTAX_ERROR_CANNOT_PARSE .. bit)
 			return nil
 		end
-		
+
 		if target == "self" then
 			target = "player"
 		end
-		
+
 		local targetV = lazyScript.validateUnitId(target)
 		if (target ~= "" and (not targetV)) then
-			lazyScript.p(THE_UNITID..target..IS_NOT_VALID)
+			lazyScript.p(THE_UNITID .. target .. IS_NOT_VALID)
 			return nil
 		end
-		
-		if target ~= "" then 
+
+		if target ~= "" then
 			target = targetV
 		end
 		if smart and LazySpell then
 			local lastActionObj = actions[table.getn(actions)]
 			local spellIndex, _, _ = lastActionObj:FindSpellRanks(false)
 			local spellName, _ = GetSpellName(spellIndex, BOOKTYPE_SPELL)
-			rank = LazySpell:GetSmartSpell(spellName,target)
+			rank = LazySpell:GetSmartSpell(spellName, target)
 		end
 		if rank then
 			local lastActionObj = actions[table.getn(actions)]
-			local rankAction = lazyScript.castSpellByRankActions[lastActionObj.code..rank.."@"..target]
+			local rankAction = lazyScript.castSpellByRankActions[lastActionObj.code .. rank .. "@" .. target]
 			if not rankAction then
 				local spellIndexStart, rankCount, maxRank = lastActionObj:FindSpellRanks(sayNothing)
 				if not maxRank then
-					lazyScript.p(NOT_POSSIBLE_SPECIFY_RANK..lastActionObj.name..".")
+					lazyScript.p(NOT_POSSIBLE_SPECIFY_RANK .. lastActionObj.name .. ".")
 					return nil
-					elseif (rankCount ~= maxRank) and (rank ~= maxRank) then
-					lazyScript.p(YOU_CAN_ONLY_USE_MAX_RANK..lastActionObj.name..".")
+				elseif (rankCount ~= maxRank) and (rank ~= maxRank) then
+					lazyScript.p(YOU_CAN_ONLY_USE_MAX_RANK .. lastActionObj.name .. ".")
 					return nil
 				end
-				
-				if rank <1 or rank > maxRank then
-					lazyScript.p(RANK..rank..EXCEEDS_MAX_OF..maxRank..FOR..lastActionObj.name..OR_IS_INVALID)
+
+				if rank < 1 or rank > maxRank then
+					lazyScript.p(RANK .. rank .. EXCEEDS_MAX_OF .. maxRank .. FOR .. lastActionObj.name .. OR_IS_INVALID)
 					return nil
 				end
 				rankAction = lazyScript.CastSpellByRankAction:New(lastActionObj, rank, target)
 			end
 			table.remove(actions, table.getn(actions))
 			table.insert(actions, rankAction)
-			elseif (not rank) and target ~= "" then
+		elseif (not rank) and target ~= "" then
 			local lastActionObj = actions[table.getn(actions)]
-			local rankAction = lazyScript.castSpellByRankActions[lastActionObj.code.."@"..target]
-			
+			local rankAction = lazyScript.castSpellByRankActions[lastActionObj.code .. "@" .. target]
+
 			if not rankAction then
 				local spellIndexStart, rankCount, maxRank = lastActionObj:FindSpellRanks(sayNothing)
-				
+
 				-- For spells that have no rank
 				if not maxRank then
 					maxRank = 1
 				end
-				
+
 				rankAction = lazyScript.CastSpellByRankAction:New(lastActionObj, maxRank, target)
 			end
 			table.remove(actions, table.getn(actions))
 			table.insert(actions, rankAction)
 		end
 	end
-	
-	lazyScript.d(PARSED..table.getn(actions)..ACTIONS_AND..table.getn(masks)..MASKS)
-	
+
+	lazyScript.d(PARSED .. table.getn(actions) .. ACTIONS_AND .. table.getn(masks) .. MASKS)
+
 	-- Filter out nil masks which may exist due to errors
 	local i = 1
 	while i <= table.getn(masks) do
 		local mask = masks[i]
 		if mask == nil then
-			lazyScript.p(WARNING_NIL_MASK_FOUND_1..line..WARNING_NIL_MASK_FOUND_2)
+			lazyScript.p(WARNING_NIL_MASK_FOUND_1 .. line .. WARNING_NIL_MASK_FOUND_2)
 			table.remove(masks, i)
-			else
+		else
 			i = i + 1
 		end
 	end
-	
+
 	-- Remove duplicate masks
 	local origMaskCount = table.getn(masks)
 	local seenMasks = {}
@@ -191,29 +191,29 @@ function lazyScript.ParseLine(line)
 		local mask = masks[i]
 		if seenMasks[mask] then
 			table.remove(masks, i)
-			else
+		else
 			seenMasks[mask] = true
 			i = i + 1
 		end
 	end
-	
+
 	if origMaskCount - table.getn(masks) > 0 then
-		lazyScript.d(REMOVED_1..(origMaskCount - table.getn(masks))..DUPLICATE_MASKS)
+		lazyScript.d(REMOVED_1 .. (origMaskCount - table.getn(masks)) .. DUPLICATE_MASKS)
 	end
-	
+
 	-- Check that we only have one action which triggers the global cooldown
 	local triggerActions = 0
 	local printTrigger
 	if table.getn(actions) > 1 then
 		for _, actionObj in ipairs(actions) do
-			if (actionObj.triggersGlobal) then
-				printTrigger = "true"
-			elseif (not actionObj.triggersGlobal) then
-				printTrigger = "false"
-			else
-				printTrigger = "nil"
+			if (actionObj.triggersGlobal) then 
+				printTrigger = "true" 
+			elseif (not actionObj.triggersGlobal) then 
+				printTrigger = "false" 
+			else 
+				printTrigger = "nil" 
 			end
-			lazyScript.d("Action: "..actionObj.code..", TriggersGlobal: "..printTrigger)
+			lazyScript.d("Action: " .. actionObj.code .. ", TriggersGlobal: " .. printTrigger)
 			if (actionObj.triggersGlobal) then
 				triggerActions = triggerActions + 1
 				if triggerActions > 1 then
@@ -223,9 +223,9 @@ function lazyScript.ParseLine(line)
 			end
 		end
 	end
-	
+
 	return { actions, masks }
-	
+
 end
 
 function lazyScript.ParseForm(formName, lines)
@@ -241,52 +241,52 @@ function lazyScript.ParseForm(formName, lines)
 		line = string.gsub(line, "%-%-.*", "")
 		line = string.gsub(line, "^%s+", "")
 		line = string.gsub(line, "%s+$", "")
-		
+
 		-- If the line wasn't just a comment, parse it
 		if (line ~= "") then
 			line = lazyScript.EscapeKnownDashedWords(line)
-			
+
 			-- Check for includeForm
 			if lazyScript.rebit(line, "^includeForm=(.+)$") then
 				local includeFormName = lazyScript.match1
-				
+
 				if includeFormName == formName then
-					lazyScript.p(formName..CANNOT_INCLUDE_FORM_1..includeFormName..CANNOT_INCLUDE_FORM_2)
+					lazyScript.p(formName .. CANNOT_INCLUDE_FORM_1 .. includeFormName .. CANNOT_INCLUDE_FORM_2)
 					return nil
 				end
-				
+
 				if not lazyScript.FindForm(includeFormName) then
-					lazyScript.p(formName..COULD_NOT_INCLUDE_FORM..includeFormName..DOES_NOT_EXIST)
+					lazyScript.p(formName .. COULD_NOT_INCLUDE_FORM .. includeFormName .. DOES_NOT_EXIST)
 					return nil
 				end
-				
-				lazyScript.d(formName..INCLUDING_FORM..includeFormName)
+
+				lazyScript.d(formName .. INCLUDING_FORM .. includeFormName)
 				local parsedForm = lazyScript.FindParsedForm(includeFormName, false)
 				if not parsedForm then
-					lazyScript.p(formName..COULD_NOT_INCLUDE_FORM..includeFormName..CONTAINS_ERRORS)
+					lazyScript.p(formName .. COULD_NOT_INCLUDE_FORM .. includeFormName .. CONTAINS_ERRORS)
 					return nil
 				end
 				for _, parsedLine in ipairs(parsedForm) do
 					table.insert(actions, parsedLine)
 					totalMaskCount = totalMaskCount + table.getn(parsedLine[2])
 				end
-				
+
 				table.insert(dependencies, includeFormName)
-				else
+			else
 				-- Run it through bitParsers
 				local parsedLine = lazyScript.ParseLine(line)
 				if (not parsedLine) then
-					lazyScript.p(formName..COULD_NOT_PARSE_FROM_LINE..line)
+					lazyScript.p(formName .. COULD_NOT_PARSE_FROM_LINE .. line)
 					return nil
-					else
+				else
 					table.insert(actions, parsedLine)
 					totalMaskCount = totalMaskCount + table.getn(parsedLine[2])
 				end
 			end
 		end
 	end
-	lazyScript.d(formName..TOTAL_MASKS..totalMaskCount)
-	
+	lazyScript.d(formName .. TOTAL_MASKS .. totalMaskCount)
+
 	-- Optimization hack: Trigger the caching of slots and spell indexes on actions which have
 	-- them, so that the searching for slot/spell index doesn't lag the first execution of the
 	-- form in combat.
@@ -300,7 +300,7 @@ function lazyScript.ParseForm(formName, lines)
 			end
 		end
 	end
-	
+
 	return actions, dependencies
 end
 
@@ -326,13 +326,13 @@ function lazyScript.FindParsedForm(formName, noParse)
 		if (not noParse) then
 			local actions = lazyScript.FindForm(formName)
 			if (actions) then
-				lazyScript.d(PARSING_FORM..formName)
+				lazyScript.d(PARSING_FORM .. formName)
 				local parsedForm, dependencies = lazyScript.ParseForm(formName, actions)
 				lazyScript.parsedFormCache[formName] = parsedForm
 				lazyScript.parsedFormDependencies[formName] = dependencies
 				lazyScript.ReparseDependentForms(formName)
 			end
-			else
+		else
 			return nil
 		end
 	end
@@ -353,7 +353,7 @@ function lazyScript.ReparseDependentForms(formName)
 		if eachFormName ~= formName and dependencies ~= nil then
 			for _, dependency in ipairs(dependencies) do
 				if dependency == formName then
-					lazyScript.d(REPARSING_FORM..eachFormName..WHITCH_DEPENDS_FORM..formName)
+					lazyScript.d(REPARSING_FORM .. eachFormName .. WHITCH_DEPENDS_FORM .. formName)
 					lazyScript.ClearParsedForm(eachFormName)
 					lazyScript.FindParsedForm(eachFormName, false)
 					table.insert(reparsed, eachFormName)
@@ -373,7 +373,7 @@ function lazyScript.ClearDependentForms(formName)
 		if eachFormName ~= formName and dependencies ~= nil then
 			for _, dependency in ipairs(dependencies) do
 				if dependency == formName then
-					lazyScript.d(CLEARING_CACHE..eachFormName..WHITCH_DEPENDS_FORM..formName)
+					lazyScript.d(CLEARING_CACHE .. eachFormName .. WHITCH_DEPENDS_FORM .. formName)
 					lazyScript.ClearParsedForm(eachFormName)
 					table.insert(cleared, eachFormName)
 					break
