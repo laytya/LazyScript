@@ -1,7 +1,7 @@
 ## Interface: 11200
 ## Title: LazyScript
-## Version: 1.0.3
-## X-Revision: $Revision: 747 $
+## Version: 1.0.4
+## X-Revision: $Revision: 800 $
 ## X-LazyScriptCompatibility: 3
 ## Notes: Programmable Class Attacks.
 ## Notes-ruRU: Программируемые атаки классов.
