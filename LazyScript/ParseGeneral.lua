@@ -818,6 +818,30 @@ function lazyScript.bitParsers.ifInRaid(bit, actions, masks)
 	return true
 end
 
+function lazyScript.masks.PartyHaveClass(class)
+	return function()
+		local class = string.upper(class)
+		for i=1,4 do
+			local _ , partyClass = UnitClass("party"..i) 
+			if  class == partyClass  then
+				return true
+			end
+		end
+	end
+end
+
+function lazyScript.bitParsers.ifPartyHaveClass(bit, actions, masks)
+	if (not lazyScript.rebit(bit, "^if(Not)?PartyHaveClass=?(.+)$")) then
+		return false
+	end
+	local negate = lazyScript.negate1()
+	local subMasks = {}
+	for class in string.gfind(lazyScript.match2, "[^,]+") do
+		table.insert(subMasks, lazyScript.masks.PartyHaveClass(class))
+	end
+	table.insert(masks, lazyScript.orWrapper(subMasks, negate))
+	return true
+end
 
 function lazyScript.masks.TargetInMeleeRange(sayNothing)
 	if (not lazyScript.rangeCheckAction) then
