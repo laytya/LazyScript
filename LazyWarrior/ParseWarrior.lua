@@ -180,7 +180,9 @@ function lazyWarriorLoad.LoadParseWarrior()
 		return true
 	end
 	
-	
+	function lazyWarrior.pseudoActions.stopCasting:IsUsable(sayNothing)
+		return true
+	end
 	
 	-- Warrior utility functions
 	---------------------------
