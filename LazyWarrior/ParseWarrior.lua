@@ -184,6 +184,32 @@ function lazyWarriorLoad.LoadParseWarrior()
 		return true
 	end
 	
+	-- checks to see if a shield is equipped (get from Zorlen)
+	function lazyWarrior.masks.isShieldEquipped()
+		local slot = GetInventorySlotInfo("SecondaryHandSlot")
+		local link = GetInventoryItemLink("player", slot)
+		if link then
+			local id, name = lazyScript.IdAndNameFromLink(link)
+			local _, _, _, _, _, itemSubType = GetItemInfo(id)
+			if itemSubType == ITEM_SUBTYPE_SHIELDS then 						
+				if GetInventoryItemBroken("player", slot) then
+					return false
+				end
+				return true
+			end
+		end
+		return false
+	end
+
+	function lazyScript.bitParsers.ifShieldEquipped(bit, actions, masks)
+		if (not lazyScript.rebit(bit, "^if(Not)?ShieldEquipped$")) then
+			return false
+		end
+		local negate = lazyScript.negate1()
+		table.insert(masks, lazyScript.negWrapper(lazyWarrior.masks.isShieldEquipped, negate))
+		return true
+	end
+	
 	-- Warrior utility functions
 	---------------------------
 	-- These are functions that are never called by a form but are used within other mask functions.

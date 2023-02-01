@@ -1023,8 +1023,7 @@ function lazyScript.pseudoActions.assist:IsUsable(sayNothing)
 	-- If we haven't determined the assist's party/raid unitId yet or if the
 	-- player for the unitId is not our assist, scan the party/raid to find
 	-- the assist's unitId.
-	if (
-		lazyScript.assistUnitId == nil or
+	if ( lazyScript.assistUnitId == nil or
 			string.lower(UnitName(lazyScript.assistUnitId) or "") ~= string.lower(lazyScript.assistName)) then
 		lazyScript.assistUnitId = lazyScript.findPlayerUnitId(lazyScript.assistName)
 		if (lazyScript.assistUnitId == nil) then

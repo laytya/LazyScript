@@ -207,9 +207,11 @@ function lazyRogueLoad.LoadParseRogue()
 	function lazyRogue.masks.IsLastChance(fudgeFactor)
 		return function(sayNothing)
 			-- MobInfo-2 required
+			--[[
 			if (not MobHealth_GetTargetCurHP) then
 				return false
 			end
+			]]
 			if (GetComboPoints() == 0 or not UnitName("target") or UnitHealth("target") == 0) then
 				return false
 			end

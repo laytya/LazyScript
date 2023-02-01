@@ -127,6 +127,7 @@ function lazyScript.ParseLine(line)
 			local lastActionObj = actions[table.getn(actions)]
 			local spellIndex, _, _ = lastActionObj:FindSpellRanks(false)
 			local spellName, _ = GetSpellName(spellIndex, BOOKTYPE_SPELL)
+			if target == "" and UnitExists("target") then target = "target" end
 			rank = LazySpell:GetSmartSpell(spellName, target)
 		end
 		if rank then

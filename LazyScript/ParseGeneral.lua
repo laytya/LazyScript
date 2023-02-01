@@ -930,7 +930,6 @@ function lazyScript.bitParsers.ifTargetAttackable(bit, actions, masks)
 end
 
 
--- :-(
 -- supported unitIds: player, pet, target
 function lazyScript.masks.GetUnitHealth(unitId, wantPct, wantDeficit, sayNothing)
 	if (unitId == "player" or unitId == "pet" or UnitPlayerOrPetInParty(unitId) or UnitPlayerOrPetInRaid(unitId)) then
@@ -951,24 +950,20 @@ function lazyScript.masks.GetUnitHealth(unitId, wantPct, wantDeficit, sayNothing
 		
 		elseif (unitId == "target") then
 		if (wantPct) then
+			local pct = (UnitHealth(unitId) / UnitHealthMax(unitId)) * 100
 			if (wantDeficit) then
-				return (100 - UnitHealth(unitId))
+				return (100 - pct)
 				else
-				return UnitHealth(unitId)
+				return pct
 			end
 			else
-			if (not MobHealth_GetTargetCurHP) then
-				if (not sayNothing) then
-					lazyScript.p(MOBINFO2_NOT_INSTALLED)
-				end
-				return nil
-			end
-			local hp = MobHealth_GetTargetCurHP()
+			
+			local hp = MobHealth_GetTargetCurHP and MobHealth_GetTargetCurHP() or UnitHealth(unitId)
 			if (not hp) then
 				return nil
 			end
 			if (wantDeficit) then
-				local maxHP = MobHealth_GetTargetMaxHP()
+				local maxHP = MobHealth_GetTargetMaxHP and MobHealth_GetTargetMaxHP() or UnitHealthMax(unitId)
 				if not maxHP then
 					return nil
 				end

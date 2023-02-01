@@ -49,6 +49,7 @@ function lazyWarriorLoad.LoadWarriorLocalization(locale)
 	WARRIOR_EARLY_BLOODTHIRST = "Early Bloodthirst! Kill shot!"
 	WARRIOR_STANCE = "Stance: "
 	WARRIOR_NOT_RECOGNISED = " not recognised."
+	ITEM_SUBTYPE_SHIELDS = "Shields"
 	
 	function lazyWarrior.CustomLocaleHelp() return [[<H2>Warrior Criteria:</H2>]] end
 	
@@ -101,6 +102,7 @@ function lazyWarriorLoad.LoadWarriorLocalization(locale)
 		WARRIOR_EARLY_BLOODTHIRST = "Поздно Жажда крови! Добивающий удар!"
 		WARRIOR_STANCE = "Стойка: "
 		WARRIOR_NOT_RECOGNISED = " не знакома."
+		ITEM_SUBTYPE_SHIELDS = "Shields"
 		
 		function lazyWarrior.CustomLocaleHelp() return [[<H2>Критерии Воина:</H2>]] end
 		
