@@ -400,7 +400,8 @@ function lazyScript.formHelp.SetupCriteria()
 	text = text.."<P>-if[Not]{[Player],Target}FlagRunner</P>"
 	text = text.."<P>-if[Not]{[Player],Pet,Target}InCombat</P>"
 	text = text.."<P>-if[|cff00ffff&lt;UnitId&gt;|r]{&lt;,=,&gt;}XX[%]{hp,mana/energy/rage/focus}[Deficit] |cffffff00("..TAB_CRITERIA_SEE_NOTE.." #9)|r</P>"
-	text = text.."<P>-if[Not]{[Player],Target}Race={Human, Night Elf, Gnome, Dwarf, Orc, Scourge/Undead, Tauren, Troll}</P><BR/>"
+	text = text.."<P>-if[Not]{[Player],Target}Race={Human, Night Elf, Gnome, Dwarf, Orc, Scourge/Undead, Tauren, Troll}</P>"
+	text = text.."<P>-if[Not]PartyHaveClass={Druid, Hunder, Mage, Paladin, Priest, Rogue, Shaman, Warlock, Warrior}</P><BR/>"
 	text = text..TAB_CRITERIA_TARGET
 	text = text.."<P>-if[Not]CanDebuff</P>"
 	text = text.."<P>-if[Not]HaveTarget</P>"
@@ -428,8 +429,8 @@ function lazyScript.formHelp.SetupCriteria()
 	text = text.."<P>-if[Not]TargetOfTargetClass={Druid, Hunter, Mage, Paladin, Priest, Rogue, Shaman, Warlock, Warrior}</P>"
 	text = text.."<P>-if[Not]TargetTrivial</P>"
 	text = text.."<P>-if[Not]TargetType={Beast, Critter, Demon, Dragonkin, Elemental, Humanoid, Undead}</P>"
-	text = text.."<P>-ifTimeToDeath{&lt;,=,&gt;}XXs</P><BR/>"
-	
+	text = text.."<P>-ifTimeToDeath{&lt;,=,&gt;}XXs</P>"
+	text = text.."<P>-if[Not]UnitExists=[|cff00ffff&lt;UnitId&gt;|r]</P><BR/>"
 	
 	text = text.."<BR/>"..TAB_CRITERIA_CUSTOM_HELP_1
 	text = text.."<BR/>"..TAB_CRITERIA_CUSTOM_HELP_2
