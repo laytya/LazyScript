@@ -271,6 +271,7 @@ function lazyWarriorLoad.LoadParseWarrior()
 		return [[
 			<P>-if[Fury]BloodthirstKillShot[XX%hp]</P>
 			<P>-if[Not]Stance={battle,berserk,defensive}</P>
+			<P>-if[Not]ShieldEquipped</P>
 		]]
 	end
 	
