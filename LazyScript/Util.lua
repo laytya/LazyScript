@@ -31,6 +31,10 @@ function lazyScript.SplitArgs(line)
 	return lazyScript.split(line, "%s")
 end
 
+function lazyScript.filterArgs(line)
+	return string.gsub(line, "_", " ")
+end
+
 -- Helper regex function.  Returns true/false if the pattern matched,
 -- and sets the globals lazyScript.match1, 2, 3, 4, 5, 6  per your parenthesis matching.
 function lazyScript.re(text, re)

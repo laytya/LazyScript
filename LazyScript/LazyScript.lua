@@ -844,6 +844,9 @@ function lazyScript.SlashCommand(line)
 		end
 		
 		elseif (cmd == "do") then
+			for i = 1, table.getn(args), 1 do
+				args[i] = lazyScript.filterArgs(args[i])
+			end	
 		local actions = lazyScript.ParseForm("*SlashCommand*", args)
 		local doNothing = false
 		if (actions) then

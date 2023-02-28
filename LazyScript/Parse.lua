@@ -95,7 +95,7 @@ function lazyScript.ParseLine(line)
 
 		-- Did not find a bitParser, is it an action?
 		if (not foundBit) then
-			relaxedBit = lazyScript.relax(bit)
+			local relaxedBit = lazyScript.relax(bit)
 			for key, action in pairs(lazyScript.actions) do
 				if (lazyScript.relax(key) == relaxedBit) then
 					table.insert(actions, action)

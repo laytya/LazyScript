@@ -210,7 +210,7 @@ function lazyScript.Action:FindSpellRanks(sayNothing)
 
 	local rankCount = 0
 	for spellRank = 1, 99 do
-		spellIndex = spellIndexStart + spellRank - 1
+		local spellIndex = spellIndexStart + spellRank - 1
 
 		local texture = GetSpellTexture(spellIndex, "spell")
 		if (not texture) then
@@ -288,7 +288,7 @@ function lazyScript.Action:FindSpellRanksByName(sayNothing)
 
 	local rankCount = 0
 	for spellRank = 1, 99 do
-		spellIndex = spellIndexStart + spellRank - 1
+		local spellIndex = spellIndexStart + spellRank - 1
 
 		local spellName, _ = GetSpellName(spellIndex, "spell")
 		if (not spellName) then
