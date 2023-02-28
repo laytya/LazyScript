@@ -791,6 +791,15 @@ function lazyScript.masks.UnitExists(unitId)
 	end
 end
 
+function lazyScript.bitParsers.ifUnitExists(bit, actions, masks)
+	if (not lazyScript.rebit(bit, "^if(Not)?UnitExists=?(.+)$")) then
+		return false
+	end
+	local negate = lazyScript.negate1()
+	local unitId = lazyScript.match2
+	table.insert(masks, lazyScript.negWrapper(lazyScript.masks.UnitExists(unitId), negate))
+	return true
+end
 
 function lazyScript.masks.PlayerInGroup()
 	return (GetNumPartyMembers() > 0)
