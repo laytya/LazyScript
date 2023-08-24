@@ -2363,7 +2363,7 @@ end
 -- LaYt
 function lazyScript.masks.GotTalent(nameRegex)
 	return function()
-		local tpts = lazyScript.masks.FindTalentPoints(nameRegex)
+		local tpts = lazyScript.masks.FindTalentPoints("^"..nameRegex)
 		lazyScript.d("Search Talent:"..nameRegex)
 		lazyScript.d("Talent rank:"..tpts)
 		if (tpts > 0) then
