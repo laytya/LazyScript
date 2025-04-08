@@ -11,6 +11,8 @@ function lazyMageLoad.LoadParseMage()
 	
 	lazyMage.actions.amplifyMagic       = lazyMage.Action:New("amplifyMagic",     "Spell_Holy_FlashHeal")
 	lazyMage.actions.arcanePower        = lazyMage.Action:New("arcanePower",      "Spell_Nature_Lightning")
+	lazyMage.actions.arcaneRupture      = lazyMage.Action:New("arcaneRupture",    "Spell_Arcane_Blast")
+	lazyMage.actions.arcaneSurge        = lazyMage.Action:New("arcaneSurge",      "INV_Enchant_EssenceMysticalLarge")
 	lazyMage.actions.blastWave          = lazyMage.Action:New("blastWave",        "Spell_Holy_Excorcism_02")
 	lazyMage.actions.blink              = lazyMage.Action:New("blink",            "Spell_Arcane_Blink")
 	lazyMage.actions.blizzard           = lazyMage.Action:New("blizzard",         "Spell_Frost_IceStorm")

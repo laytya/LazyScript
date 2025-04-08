@@ -32,7 +32,7 @@ function lazyWarriorLoad.LoadParseWarrior()
 	lazyWarrior.actions.shieldBlock        = lazyWarrior.Action:New("shieldBlock",            "Ability_Defend", nil, false, true)
 	lazyWarrior.actions.shieldSlam         = lazyWarrior.Action:New("shieldSlam",             "INV_Shield_05")
 	lazyWarrior.actions.shieldWall         = lazyWarrior.Action:New("shieldWall",             "Ability_Warrior_ShieldWall")
-	lazyWarrior.actions.slam               = lazyWarrior.Action:New("slam",                   "Ability_Warrior_DecisiveStrike")
+	lazyWarrior.actions.slam               = lazyWarrior.Action:New("slam",                   "Ability_Warrior_DecisiveStrike_New")
 	lazyWarrior.actions.sunder             = lazyWarrior.Action:New("sunder",                 "Ability_Warrior_Sunder")
 	lazyWarrior.actions.sweepingStrikes    = lazyWarrior.Action:New("sweepingStrikes",        "Ability_Rogue_SliceDice")
 	lazyWarrior.actions.taunt              = lazyWarrior.Action:New("taunt",                  "Spell_Nature_Reincarnation")
@@ -82,6 +82,14 @@ function lazyWarriorLoad.LoadParseWarrior()
 	end
 	
 	
+	function lazyWarrior.bitParsers.slam(bit, actions, masks)
+		if (not lazyWarrior.rebit(bit, lazyWarrior.actions.slam.codePattern)) then
+			return false
+		end
+		table.insert(actions, lazyWarrior.actions.slam)
+		table.insert(masks, lazyWarrior.masks.IsSlamTime)
+		return true
+	end
 	
 	-- Simple Warrior specific masks
 	-------------------------------
@@ -101,6 +109,24 @@ function lazyWarriorLoad.LoadParseWarrior()
 	-- "return function() ... end" inside the mask function, everything else will be evaluated at
 	-- the time that the mask is parsed.
 	
+	function lazyWarrior.masks.IsSlamTime()
+		
+		if SP_ST_Updater then
+			return  st_timer > UnitAttackSpeed("player") * 0.75
+		else
+			return true
+		end
+	end
+	
+	function lazyWarrior.bitParsers.IsSlamTime(bit, actions, masks)
+		if (not lazyWarrior.rebit(bit, "^if(Not)?SlamTime$")) then
+			return false
+		end
+		local negate = lazyWarrior.negate1()
+		table.insert(masks, lazyWarrior.negWrapper(lazyWarrior.masks.IsSlamTime, negate))
+		return true
+	end
+
 	function lazyWarrior.masks.IsBloodthirstKillShot(goalPct, bloodFuryTrue)
 		return function(sayNothing)
 			local targetMaxHP = MobHealth_GetTargetMaxHP()

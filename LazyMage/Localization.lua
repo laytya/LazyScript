@@ -4,6 +4,8 @@ function lazyMageLoad.LoadMageLocalization(locale)
 	
 	lazyMageLocale.enUS.ACTION_TTS.amplifyMagic     = "Amplify Magic"
 	lazyMageLocale.enUS.ACTION_TTS.arcanePower      = "Arcane Power"
+	lazyMageLocale.enUS.ACTION_TTS.arcaneRupture    = "Arcane Rupture" --TWOW
+	lazyMageLocale.enUS.ACTION_TTS.arcaneSurge 		= "Arcane Surge"   --TWOW
 	lazyMageLocale.enUS.ACTION_TTS.blastWave        = "Blast Wave"
 	lazyMageLocale.enUS.ACTION_TTS.blink            = "Blink"
 	lazyMageLocale.enUS.ACTION_TTS.blizzard         = "Blizzard"

@@ -38,6 +38,7 @@ function lazyRogueLoad.LoadParseRogue()
 	lazyRogue.actions.sprint           = lazyRogue.Action:New("sprint",           "Ability_Rogue_Sprint")
 	lazyRogue.actions.ss               = lazyRogue.Action:New("ss",               "Spell_Shadow_RitualOfSacrifice")
 	lazyRogue.actions.stealth          = lazyRogue.Action:New("stealth",          "Ability_Stealth")
+	lazyRogue.actions.sa         	   = lazyRogue.Action:New("sa",          	  "Ability_Rogue_SurpriseAttack")
 	lazyRogue.actions.vanish           = lazyRogue.Action:New("vanish",           "Ability_Vanish")
 	
 	
