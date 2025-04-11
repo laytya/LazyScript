@@ -32,6 +32,7 @@ function lazyRogueLoad.LoadRogueLocalization(locale)
 	lazyRogueLocale.enUS.ACTION_TTS.sprint            = "Sprint"
 	lazyRogueLocale.enUS.ACTION_TTS.ss                = "Sinister Strike"
 	lazyRogueLocale.enUS.ACTION_TTS.stealth           = "Stealth"
+	lazyRogueLocale.enUS.ACTION_TTS.sa                = "Surprise Attack"
 	lazyRogueLocale.enUS.ACTION_TTS.vanish            = "Vanish"
 	
 	lazyRogueLocale.enUS.EVISCERATE_HIT = "Your Eviscerate hits (.+) for (%d+)."
