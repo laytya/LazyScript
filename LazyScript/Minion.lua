@@ -15,7 +15,6 @@ function lazyScript.minion.OnUpdate()
 	if (not lazyScript.perPlayerConf.minionIsVisible) then
 		return
 	end
-	
 	local now = GetTime()
 	if (now >= (lazyScript.minion.lastUpdate + lazyScript.minion.updateInterval)) then
 		lazyScript.minion.lastUpdate = now
@@ -46,7 +45,7 @@ function lazyScript.minion.OnUpdate()
 							text = action.name
 							break
 						end
-						if not ((action.code == "echo" or action.code == "ping") and triggerAction.triggersGlobal) then
+						if not ((action.code == "echo" or action.code == "ping" or action.code == "active") and triggerAction.triggersGlobal) then
 							if text then
 								text = text..", "..action.name
 								else
@@ -77,4 +76,24 @@ function lazyScript.minion.SetText(text)
 		text = ""
 	end
 	LazyScriptMinionText:SetText(text)
+end
+local frameActive = 0
+function lazyScript.minion.OnActiveFrameUpdate()
+	frameActive = frameActive + arg1
+	if frameActive > 2.5 then
+		LazyScriptActiveFrame:Hide()
+		frameActive = 0
+	end
+end
+
+function lazyScript.minion.SetTextActive(text)
+	if (not text) then
+		text = ""
+	end
+	LazyScriptActiveFrameText:SetText(text)
+end
+
+function lazyScript.minion.ShowActive()
+	if LazyScriptActiveFrame:IsVisible() then frameActive = 0 end
+	LazyScriptActiveFrame:Show()
 end

@@ -44,7 +44,7 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</Anchors>
 		
 		<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground"
-		edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
 			<EdgeSize>
 				<AbsValue val="16"/>
 			</EdgeSize>
@@ -74,4 +74,79 @@ C:\Projects\WoW\Bin\Interface\FrameXML\UI.xsd">
 		</Layers>
 	</Frame>
 	
+<Frame name="LazyScriptActiveFrame" hidden="true" frameStrata="MEDIUM" toplevel="true" 
+	enableMouse="true" movable="true" parent="UIParent">
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton")
+			</OnLoad>
+			<OnUpdate>
+				lazyScript.minion.OnActiveFrameUpdate()
+			</OnUpdate>
+			<OnDragStart>
+				if (IsShiftKeyDown()) then
+				this:StartMoving()
+				end
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing()
+			</OnDragStop>
+			<OnMouseUp>
+				this:StopMovingOrSizing()
+			</OnMouseUp>
+		</Scripts>
+		
+		<Size>
+			<AbsDimension x="42" y="32"/>
+		</Size>
+		<Anchors>
+			<Anchor point="TOP">
+				<Offset>
+					<AbsDimension x="0" y="-85"/>
+				</Offset>
+			</Anchor>
+		</Anchors>
+		
+		<Backdrop name="$parentBackdrop" bgFile="Interface\TutorialFrame\TutorialFrameBackground"
+		edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+			<EdgeSize>
+				<AbsValue val="16"/>
+			</EdgeSize>
+			<TileSize>
+				<AbsValue val="32"/>
+			</TileSize>
+			<BackgroundInsets>
+				<AbsInset left="5" right="5" top="5" bottom="5"/>
+			</BackgroundInsets>
+		</Backdrop>
+		
+		<Layers>
+		<Layer level="OVERLAY">
+			<Texture name="$parentArrow" file="Interface\MoneyFrame\Arrow-Right-Up" hidden="false">
+					<Size x="16" y="16" />
+					<Anchors>
+						<Anchor point="RIGHT" />
+							<Offset>
+								<AbsDimension x="-9" y="-4"/>
+							</Offset>
+					</Anchors>
+				</Texture>
+				</Layer>
+			<Layer level="BACKGROUND">
+				<FontString name="$parentText" inherits="GameFontNormal">
+					<Size>
+						<AbsDimension x="16" y="12"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="9" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				
+			</Layer>
+		</Layers>
+	</Frame>
 </Ui>

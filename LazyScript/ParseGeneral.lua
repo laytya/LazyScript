@@ -334,6 +334,21 @@ function lazyScript.bitParsers.sayIn(bit, actions, masks)
 	return true
 end
 
+function lazyScript.bitParsers.active(bit, actions, masks)
+	if (not lazyScript.rebit(bit, "^active=(.+)$")) then
+		return false
+	end
+	
+	local message = lazyScript.match1
+	
+	local key = "active="..message
+	if (not lazyScript.otherActions[key]) then
+		lazyScript.otherActions[key] = lazyScript.ActiveAction:New("active", message)
+	end
+	table.insert(actions, lazyScript.otherActions[key])
+	return true
+end
+
 function lazyScript.bitParsers.echo(bit, actions, masks)
 	if (not lazyScript.rebit(bit, "^echo=(.+)$")) then
 		return false

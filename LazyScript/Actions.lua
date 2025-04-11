@@ -1516,6 +1516,30 @@ end
 lazyScript.SayAction.IsUsable = lazyScript.AlwaysUsable
 
 
+lazyScript.ActiveAction = {}
+function lazyScript.ActiveAction:New(code, message)
+	local obj = {}
+	setmetatable(obj, { __index = self })
+	obj.name = "active"
+	obj.code = code
+	obj.codePattern = "^" .. code .. "$"
+	obj.message = message
+	obj.triggerGlobal = false
+	obj.requiresSpellStopCasting = false
+	obj.everyTimer = 0
+	obj.nowAndEveryTimer = 0
+	return obj
+end
+
+function lazyScript.ActiveAction:Use()
+	lazyScript.minion.SetTextActive(self.message)
+	lazyScript.minion.ShowActive()
+	self.everyTimer = GetTime()
+	self.nowAndEveryTimer = self.everyTimer
+end
+
+lazyScript.ActiveAction.IsUsable = lazyScript.AlwaysUsable
+
 lazyScript.EchoAction = {}
 function lazyScript.EchoAction:New(code, message)
 	local obj = {}
