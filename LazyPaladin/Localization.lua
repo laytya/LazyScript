@@ -33,6 +33,8 @@ function lazyPaladinLoad.LoadPaladinLocalization(locale)
 	lazyPaladinLocale.enUS.ACTION_TTS.gBlessSlv     = "Greater Blessing of Salvation"
 	lazyPaladinLocale.enUS.ACTION_TTS.gBlessSnct    = "Greater Blessing of Sanctuary"
 	lazyPaladinLocale.enUS.ACTION_TTS.gBlessWisdom  = "Greater Blessing of Wisdom"
+	lazyPaladinLocale.enUS.ACTION_TTS.handFreedom	= "Hand of Freedom"
+	lazyPaladinLocale.enUS.ACTION_TTS.handProt		= "Hand of Protection"
 	lazyPaladinLocale.enUS.ACTION_TTS.hmrJustice    = "Hammer of Justice"
 	lazyPaladinLocale.enUS.ACTION_TTS.hmrWrath      = "Hammer of Wrath"
 	lazyPaladinLocale.enUS.ACTION_TTS.holyLight     = "Holy Light"
